@@ -34,6 +34,10 @@ Puedes abrir o descargar los archivos [antes.svg](docs/images/gmail-antes.svg) y
 
 ## Qué funciona
 
+**Nuevo: organización temática y por entidad.** Además de las categorías de limpieza, ahora hay etiquetas anidadas `Organizador/Temas/Tema/Subtema` y `Organizador/Entidades/dominio`. El flujo de [descubrimiento de ontología e IA opcional](docs/ONTOLOGIA_E_IA.md) inventaría el histórico antes de proponer una estructura. Informa de la cobertura real y guarda un borrador revisable. Sigue trabajando solo con cabeceras; no analiza todavía los cuerpos de los mensajes.
+
+El [diseño del motor semántico](docs/MOTOR_SEMANTICO_PROPUESTO.md) describe el siguiente paso: embeddings locales, agrupación del histórico y un clasificador para el correo nuevo. Ese motor aún no está implementado.
+
 - Importación local de MBOX (por ejemplo, una exportación de Google Takeout).
 - Conexión opcional a Gmail mediante OAuth de escritorio.
 - Clasificación por lotes reanudable y estimación del tiempo de clasificación local.
@@ -114,7 +118,7 @@ Recalcular elimina aprobaciones de propuestas aún no aplicadas. No retira etiqu
 
 ## Privacidad y costes
 
-Los correos no se envían a proveedores de IA. No necesitas cuenta de GitHub para ejecutarlo ni copiar el repositorio a privado. `data/`, MBOX, tokens y credenciales están excluidos de Git. La base contiene remitentes y asuntos sin cifrar: protege tu sesión, usa cifrado de disco y no compartas CSV o copias de seguridad. No ejecutes el programa en un equipo compartido sin protección.
+Por defecto no se envía nada a proveedores de IA. Los comandos opcionales `ai-ontology` y `ai-classify` requieren consentimiento explícito y pueden generar costes API. Consulta qué datos envía cada uno en la [guía de IA](docs/ONTOLOGIA_E_IA.md). No necesitas cuenta de GitHub para ejecutarlo ni copiar el repositorio a privado. `data/`, MBOX, tokens y credenciales están excluidos de Git. La base contiene remitentes y asuntos sin cifrar: protege tu sesión, usa cifrado de disco y no compartas CSV o copias de seguridad. No ejecutes el programa en un equipo compartido sin protección.
 
 El PC debe permanecer encendido. No hay un servicio programado de fondo todavía: cada comando termina al completar su trabajo. El tiempo estimado corresponde solo a clasificación local; no incluye OAuth, descarga ni aplicación de etiquetas.
 
@@ -124,6 +128,6 @@ El PC debe permanecer encendido. No hay un servicio programado de fondo todavía
 python -m unittest discover -s tests -v
 ```
 
-Pendientes: conexión Hotmail/Outlook mediante Microsoft Graph, interfaz gráfica, programador de ciclos, sincronización Gmail por historyId, deshacer automático y clasificación opcional con IA. El importador MBOX puede utilizarse con exportaciones compatibles, pero no equivale a una conexión Outlook.
+Pendientes: conexión Hotmail/Outlook mediante Microsoft Graph, interfaz gráfica, programador de ciclos, sincronización Gmail por historyId, deshacer automático y análisis semántico de cuerpos. El importador MBOX puede utilizarse con exportaciones compatibles, pero no equivale a una conexión Outlook.
 
 Nunca incluyas datos reales en incidencias, pruebas o contribuciones.

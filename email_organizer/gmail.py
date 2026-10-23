@@ -67,9 +67,18 @@ def apply(db, api):
             print(f'Omitido mensaje protegido: {row["id"]}')
             continue
         names = ['Organizador/' + row['category']]
+        if row['topic']:
+            names.append('Organizador/Temas/' + row['topic'])
+        if row['entity']:
+            names.append('Organizador/Entidades/' + row['entity'])
         if row['candidate']:
             names.append('Organizador/Revisar para borrar')
-        for name in names:
+        # Crear padres de la jerarquía, sin aplicar esos padres al mensaje.
+        hierarchy = dict.fromkeys('/'.join(name.split('/')[:i]) for name in names for i in range(1, len(name.split('/')) + 1))
+        missing = set(hierarchy) - labels.keys()
+        if len(labels) + len(missing) > 900:
+            raise RuntimeError('Límite preventivo de 900 etiquetas: revisa la ontología y entidades antes de continuar.')
+        for name in hierarchy:
             if name not in labels:
                 labels[name] = execute(api.users().labels().create(userId='me', body={'name': name, 'labelListVisibility': 'labelShow', 'messageListVisibility': 'show'}))['id']
         additions = [labels[name] for name in names if labels[name] not in current.get('labelIds', [])]

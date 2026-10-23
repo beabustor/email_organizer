@@ -17,7 +17,13 @@ def connect(path):
         applied INTEGER DEFAULT 0, PRIMARY KEY(source,id));
       CREATE TABLE IF NOT EXISTS events (
         timestamp TEXT, source TEXT, id TEXT, action TEXT, detail TEXT);
+      CREATE TABLE IF NOT EXISTS ai_cache (cache_key TEXT PRIMARY KEY, result TEXT);
     ''')
+    columns = {row[1] for row in db.execute('PRAGMA table_info(messages)')}
+    for name, definition in {'topic': 'TEXT', 'entity': "TEXT DEFAULT ''", 'confidence': 'REAL', 'topic_reason': 'TEXT'}.items():
+        if name not in columns:
+            db.execute(f'ALTER TABLE messages ADD COLUMN {name} {definition}')
+    db.commit()
     return db
 
 

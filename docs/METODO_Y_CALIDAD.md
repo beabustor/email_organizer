@@ -4,7 +4,7 @@
 
 El repositorio tiene pruebas funcionales con datos ficticios; **no tiene una evaluación de calidad sobre correos reales etiquetados**. Ni esas pruebas ni la capacidad de recorrer 30.000 mensajes demuestran precisión semántica. No se publica una cifra de acierto sin un conjunto de evaluación, resultados y método reproducibles.
 
-Se contrastó documentación de los proyectos enlazados abajo el 23 de octubre de 2026. Son métodos establecidos, no una certificación de calidad para correo personal. El motor de contenido descrito a continuación es un diseño pendiente de implementación.
+Se contrastó documentación de los proyectos enlazados abajo el 23 de octubre de 2026. Son métodos establecidos, no una certificación de calidad para correo personal. El motor de contenido está implementado: consulta TECNOLOGIA.md para la combinación exacta y sus pruebas. El siguiente procedimiento incluye comparaciones aún pendientes, no todas las bibliotecas citadas están instaladas.
 
 ## Procedimiento recomendado
 
@@ -18,7 +18,7 @@ Se contrastó documentación de los proyectos enlazados abajo el 23 de octubre d
 
 ### B. Descubrimiento, no clasificación definitiva
 
-Usar BERTopic como candidato inicial: embeddings multilingües → reducción dimensional opcional → HDBSCAN → términos representativos con c-TF-IDF. Inspeccionar documentos representativos y mensajes sin grupo. Probar estabilidad ante cambios de parámetros y semillas.
+Como alternativa al motor MiniBatchKMeans implementado, evaluar BERTopic: embeddings multilingües → reducción dimensional opcional → HDBSCAN → términos representativos con c-TF-IDF. Inspeccionar documentos representativos y mensajes sin grupo. Probar estabilidad ante cambios de parámetros y semillas.
 
 BERTopic permite jerarquías y asignar documentos nuevos, pero un grupo estadístico no equivale automáticamente a una carpeta útil. Separar temas, entidades y acciones; revisar y versionar la taxonomía. Un modelo de lenguaje puede proponer nombres a partir de evidencia, no decidir por sí solo qué es importante para el usuario.
 

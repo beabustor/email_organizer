@@ -1,163 +1,123 @@
-# Instalar en tu ordenador, paso a paso
+# Instalación local paso a paso
 
-## 1. Qué debes tener
+## 1. Requisitos
 
-| Requisito | Para qué |
-| --- | --- |
-| Windows, macOS o Linux con sesión personal protegida | Ejecutar el programa local |
-| Python 3.11 o posterior; 3.12 es una opción inicial razonable | Ejecutar el código y crear un entorno aislado |
-| Navegador e Internet | Descargar dependencias y autorizar Gmail |
-| Cuenta Google con acceso a Gmail y Google Cloud Console | Crear tu cliente OAuth personal |
-| Llavero del sistema operativo | Guardar tokens OAuth sin archivo de texto plano |
-| Excel o LibreOffice, opcional | Revisar las propuestas CSV |
-| Cuenta API OpenAI/Anthropic, opcional | Los comandos IA externos actuales |
-| Git, opcional | Clonar y actualizar; no hace falta si descargas ZIP |
+- Python 3.11 o posterior; Python 3.12 es una opción inicial. [Descarga oficial](https://www.python.org/downloads/).
+- Windows, macOS o Linux con navegador e Internet y una sesión de usuario privada.
+- Llavero seguro del sistema: Windows Credential Locker, macOS Keychain o Secret Service/KWallet en Linux.
+- Gmail y un proyecto personal en Google Cloud para OAuth. No una contraseña de aplicación.
+- Excel o LibreOffice opcionales para el CSV. Git es opcional si descargas ZIP.
+- Para el motor neural se recomienda disponer de 16 GB de RAM y varios GB libres para bibliotecas/modelos, más espacio para los originales del buzón. Es una recomendación, no un rendimiento validado en todos los equipos. No hace falta GPU.
 
-No necesitas MySQL, Docker, Node.js, GPU ni un servidor para la versión actual. El motor local de embeddings aún no está implementado: no instales modelos por adelantado. Para esa fase se medirán RAM y disco; disponer de 16 GB de RAM sería una preferencia inicial, no un requisito demostrado ni una garantía de rendimiento.
+No necesitas MySQL, Node.js o Docker. El tamaño del buzón y adjuntos determina cuánto disco hace falta, no solo los 30.000 mensajes. Los originales MIME incluyen adjuntos. Antes de empezar, revisa el espacio disponible y protege el disco con cifrado del sistema. No instales en una carpeta compartida o sincronizada sin quererlo.
 
-El espacio necesario depende del volumen real del buzón, cuerpos, adjuntos y modelos, no solo de tener 30.000 mensajes. Comprueba el tamaño de tu correo y deja espacio para una copia y sus índices. La versión actual solo guarda cabeceras y no tiene cifrado propio de SQLite. Usa cifrado de disco y evita carpetas compartidas o sincronizadas si no quieres copias externas.
+## 2. Descargar
 
-**Resultado de esta instalación:** podrás probar el flujo de cabeceras. No instala el motor semántico completo pendiente. Esta guía no supone que se haya validado el programa en los tres sistemas; las pruebas de desarrollo realizadas aquí son Linux con Python 3.12.
+En GitHub puedes usar el repositorio original, hacer tu copia pública o importarlo como privado. Para una copia privada utiliza **+ → Import repository → Private**; un fork público no es la vía para privatizarlo.
 
-## 2. Copia el código, público o privado
+Abre **Code → Download ZIP**, descomprime y abre una terminal en la carpeta que contiene `run.py`. No pongas credenciales en commits aunque tu repositorio sea privado.
 
-1. En GitHub abre el repositorio de origen.
-2. Si quieres tu propia copia pública, puedes hacer un fork. Si la quieres privada, utiliza **+ → Import repository** y selecciona **Private**; un fork público no es la vía para privatizarlo.
-3. Abre tu repositorio y pulsa **Code → Download ZIP**.
-4. Descomprime el ZIP en una carpeta personal; entra donde están `README.md` y `pyproject.toml`.
-5. Abre una terminal en esa carpeta.
-
-Copiar código no conecta Gmail. No incluyas `data`, claves, CSV, correos o índices al subir cambios a GitHub, sea público o privado. Los archivos ignorados no se cifran ni se protegen frente a subidas manuales.
-
-## 3. Instala Python y dependencias
+## 3. Ejecutar
 
 ### Windows
 
-Descarga Python desde [python.org](https://www.python.org/downloads/), ejecuta el instalador y habilita PATH si ofrece esa opción. Cierra y abre PowerShell. Ejecuta en la carpeta del proyecto:
+Instala Python desde python.org y vuelve a abrir PowerShell. Ejecuta:
 
 ```powershell
 py --version
-py -m venv .venv
-.venv\Scripts\python.exe -m pip install -e ".[gmail]"
-.venv\Scripts\python.exe -m pip check
-.venv\Scripts\python.exe -m unittest discover -s tests -v
-.venv\Scripts\python.exe scripts/check_setup.py
+py run.py
 ```
 
-No hace falta activar scripts de PowerShell ni cambiar su política de ejecución. Si `py` no existe pero `python --version` muestra 3.11 o posterior, puedes usar `python -m venv .venv`.
+También puedes abrir `Iniciar-Windows.bat`. No cambies la política de ejecución de PowerShell. Si `py` no existe pero `python --version` muestra una versión compatible, usa `python run.py`.
 
 ### macOS
 
-Instala Python desde [python.org](https://www.python.org/downloads/macos/). Usa Terminal en la carpeta del proyecto:
+Instala Python desde python.org, abre Terminal en la carpeta del proyecto:
 
 ```sh
 python3 --version
-python3 -m venv .venv
-.venv/bin/python -m pip install -e '.[gmail]'
-.venv/bin/python -m pip check
-.venv/bin/python -m unittest discover -s tests -v
-.venv/bin/python scripts/check_setup.py
+python3 run.py
 ```
+
+También hay `Iniciar-macOS.command`, si tu sistema permite ejecutarlo. Si macOS restringe archivos descargados, utiliza el comando de Terminal en lugar de desactivar protecciones del sistema.
 
 ### Linux
 
-Comprueba `python3 --version`. En Debian/Ubuntu, si necesitas Python y soporte de entornos virtuales:
+Comprueba `python3 --version`. En Debian/Ubuntu, si faltan paquetes:
 
 ```sh
 sudo apt update
 sudo apt install python3 python3-venv python3-pip gnome-keyring libsecret-1-0
+python3 run.py
 ```
 
-Si la versión disponible es anterior a 3.11, utiliza una versión de Python compatible instalada por el método recomendado para tu distribución. Otras distribuciones tienen nombres de paquetes diferentes. El llavero debe estar disponible y desbloqueado en tu sesión gráfica; instalar paquetes no garantiza que esté operativo, especialmente por SSH.
+La versión debe ser 3.11 o posterior. En otras distribuciones usa sus paquetes oficiales. Por SSH puede no haber un llavero operativo: no rebajes a almacenamiento de tokens sin protección.
 
-Después, en la carpeta del proyecto:
+**Qué ocurre:** `run.py` crea `.venv`, instala Gmail y scikit-learn y abre el asistente de terminal. Todavía no autoriza cuentas ni cambia Gmail. No hay interfaz web pública: los resultados se abren como un informe HTML local.
 
-```sh
-python3 -m venv .venv
-.venv/bin/python -m pip install -e '.[gmail]'
-.venv/bin/python -m pip check
-.venv/bin/python -m unittest discover -s tests -v
-.venv/bin/python scripts/check_setup.py
-```
+## 4. Autorizar Gmail
 
-**Qué sucede:** se crea `.venv`, se instalan bibliotecas oficiales de Google y soporte del llavero y se ejecutan pruebas con datos ficticios. El comprobador no lee claves ni inicia sesiones; sus resultados son diagnósticos, no una certificación de seguridad. Si los tests fallan, resuelve el error antes de conectar cuentas. No uses `sudo pip`, no desactives TLS y no cambies a un almacén de tokens en texto plano.
-
-## 4. Configura Gmail OAuth
-
-No uses tu contraseña de Gmail ni una contraseña de aplicación.
-
-1. Abre [Google Cloud Console](https://console.cloud.google.com/) y crea un proyecto personal.
-2. Habilita **Gmail API** en la biblioteca de APIs.
-3. Configura la aplicación en **Google Auth Platform**, con nombre y correo de contacto.
-4. Configura la audiencia. En modo **Testing / Pruebas**, añade tu cuenta en **Test users / Usuarios de prueba**.
+1. En [Google Cloud Console](https://console.cloud.google.com/) crea un proyecto personal.
+2. Habilita **Gmail API**.
+3. Configura **Google Auth Platform**, nombre y correo de contacto.
+4. En modo **Testing / Pruebas**, añade tu dirección como usuario de prueba.
 5. Crea un cliente OAuth de tipo **Desktop app / Aplicación de escritorio**.
-6. Descarga el JSON y guárdalo como `data/credentials.json`, dentro del proyecto. Crea la carpeta `data` si hace falta.
-7. Comprueba que el archivo no acaba en `.json.json` y que está excluido de Git.
+6. Descarga el JSON como `data/credentials.json`. Crea `data` si hace falta. No lo publiques ni lo pegues en un chat.
+7. En el asistente elige **Descargar Gmail y analizar todo**. Se abre el navegador para elegir cuenta y autorizar lectura.
 
-No publiques el JSON, aunque el cliente sea de escritorio. La aplicación solicita actualmente `gmail.modify`, que permite modificar correo: **la autorización de Google es más amplia que las acciones que usa este código**. Añadir un modo de adquisición de solo lectura es una mejora de seguridad pendiente. La versión actual usa ese permiso para etiquetar, pero no contiene comandos de borrado o archivado.
+Se descarga todo lo accesible por Gmail, incluidos spam/papelera. Para excluirlos utiliza el comando avanzado de la guía de operación. La descarga inicial puede tardar bastante: guarda cada mensaje y se puede reanudar. Después utiliza el historial de Gmail; si caduca, vuelve a enumerar y reconcilia.
 
-En Windows:
+**La descarga no modifica Gmail.** El token de lectura se guarda en el llavero bajo `email-organizer`, cuenta `readonly`. La escritura se solicita por separado cuando decidas aplicar un plan y usa la cuenta `default` del mismo servicio. Si no hay llavero compatible, se detiene. La aplicación mantiene una sesión por modalidad; no es un gestor OAuth multicuenta simultáneo.
 
-```powershell
-.venv\Scripts\python.exe -m email_organizer.cli gmail-sync
-.venv\Scripts\python.exe -m email_organizer.cli inventory
-```
+En proyectos de pruebas puede caducar la autorización. Una distribución OAuth a otros usuarios puede requerir verificación de Google; una cuenta de empresa puede restringir aplicaciones.
 
-En macOS/Linux:
+## 5. Elegir motor
 
-```sh
-.venv/bin/python -m email_organizer.cli gmail-sync
-.venv/bin/python -m email_organizer.cli inventory
-```
+- **Neural multilingüe:** el asistente puede instalar PyTorch CPU, Sentence Transformers y Transformers 4.x. Después descarga `sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2` desde Hugging Face. Descarga bibliotecas y pesos, no sube tu correo. El texto largo se fragmenta sin recortar al primer bloque.
+- **Ligero:** TF-IDF + LSA con scikit-learn. Sirve como referencia local, no equivale a comprensión neural multilingüe.
 
-Se abre el navegador para elegir cuenta y autorizar; luego se importan cabeceras. No se cambia Gmail. El token va al llavero del sistema, no al JSON de credenciales. Actualmente hay una sesión OAuth por usuario del sistema. Google puede exigir nueva autorización en proyectos en pruebas; una aplicación distribuida puede necesitar verificación y una cuenta de empresa puede imponer restricciones.
+Para la primera instalación neural se pide confirmación explícita en el PC por su tamaño. No necesitas una cuenta de Hugging Face para el modelo público; se puede aplicar un límite de descarga sin autenticar. Mantén HTTPS/TLS y no aceptes ejecutar código remoto de modelos.
 
-**Antes de clasificar, espera a que termine la importación.** Repetirla conserva IDs ya importados, pero todavía no refleja los cambios posteriores de esos mensajes. Para probar sin OAuth puedes importar un MBOX; consulta la guía de comandos. Nunca adjuntes ese MBOX al chat o al repositorio.
+No se promete que un motor sea el mejor en tu histórico: se compara con ejemplos revisados. Una vez entrenada la estructura local, las actualizaciones reutilizan sus vectores y categorías; no redescubren carpetas cada vez.
 
-## 5. IA opcional: OpenAI o Anthropic
+## 6. Revisar y aplicar
 
-Para OpenAI se configura una **clave API de [platform.openai.com](https://platform.openai.com/)**, no el usuario/contraseña de ChatGPT. ChatGPT Plus/Pro y la facturación API son servicios separados. Para Claude, usa una clave de [Anthropic Console](https://console.anthropic.com/). No necesitas las dos.
+El asistente genera `data/plans/ID.html` y `ID.csv`. El navegador muestra el informe. Las rutas se imprimen en la terminal.
 
-1. Crea la clave desde la consola del proveedor y revisa su configuración de facturación, uso y tratamiento de datos.
-2. Elige un identificador de modelo disponible en tu cuenta. No se incluye un modelo predeterminado para evitar invocar uno incompatible o caro sin decisión explícita.
-3. Usa el asistente local siguiente: pide la clave sin mostrarla ni escribirla en el historial del terminal. No la guarda en disco. Se conserva en memoria del proceso y del comando hijo mientras se ejecutan.
+Revisa nombres de grupos, ejemplos, mensajes que requieren revisión y motivos de candidatos. Puedes salir sin cambios. Para probar, escribe `si` solo en unas pocas filas de la columna `aprobar`, conserva el CSV UTF-8 con comas y cierra la hoja antes de continuar. No cambies ID, plan ni hash.
 
-Windows, sustituyendo `TU_MODELO`:
+El asistente permite aprobar esas filas o confirmar todo el plan y aplica como máximo 100 mensajes en esa ejecución. Antes de escribir pide otra autorización OAuth con `gmail.modify`. No se borra ni archiva. El informe puede contener fragmentos privados: no lo publiques.
 
-```powershell
-.venv\Scripts\python.exe scripts/run_ai.py ai-ontology --provider openai --model TU_MODELO --max-calls 1 --consent-send-headers
-```
+## 7. ChatGPT/Claude opcionales para nombres humanos
 
-macOS/Linux:
+El análisis neural principal es local. Opcionalmente una API puede nombrar grupos usando sus términos y hasta dos fragmentos representativos de 1500 caracteres por grupo. Esos fragmentos pueden contener información sensible; autoriza solo si aceptas enviarla al proveedor.
+
+El propio asistente ofrece este paso después del análisis: puedes pulsar Enter para omitirlo o elegir proveedor, modelo, consentimiento y clave oculta. Si falla, conserva la estructura previa y permite seguir revisando. También existe el comando avanzado siguiente.
+
+Una suscripción a ChatGPT no es una clave API. Para OpenAI usa [platform.openai.com](https://platform.openai.com/); para Claude, [Anthropic Console](https://console.anthropic.com/). Facturación separada. Elige un modelo disponible en tu cuenta y sustituye `TU_MODELO`.
+
+Desde el Python de `.venv`:
 
 ```sh
-.venv/bin/python scripts/run_ai.py ai-ontology --provider openai --model TU_MODELO --max-calls 1 --consent-send-headers
+python scripts/name_topics.py --provider openai --api-model TU_MODELO --max-calls 4 --consent-send-examples
 ```
 
-El prompt de clave requiere un terminal interactivo y no muestra caracteres al escribir o pegar. Para Claude sustituye `--provider openai` por `--provider anthropic` y usa su modelo y clave. No pases la clave como argumento del comando. Si ya configuraste `EMAIL_ORGANIZER_AI_KEY` en el entorno, el asistente la reutiliza sin imprimirla. No se carga automáticamente ningún archivo `.env`.
+En Windows el ejecutable es `.venv\Scripts\python.exe`; en macOS/Linux `.venv/bin/python`. El asistente pide una clave con entrada oculta y no la guarda en disco. También reutiliza `EMAIL_ORGANIZER_AI_KEY` si ya está configurada, sin imprimirla. No carga `.env` automáticamente.
 
-**Qué sucede:** el comando actual envía al proveedor dominios, asuntos truncados y frecuencias, incluidos asuntos protegidos. No envía cuerpos ni adjuntos porque todavía no los importa. Puede haber datos sensibles en un asunto. El límite de una llamada es solo una primera prueba y produce normalmente un borrador parcial, no la ontología completa. No sigas sin revisar costes, datos enviados y cobertura.
+Se permiten diez grupos por llamada; el límite debe cubrir el catálogo completo. No es un presupuesto en euros. Cambiar nombres produce una versión nueva y obliga a revisar otro plan. No cambia los centroides ni autoriza acciones remotas. Se han probado sus límites con respuestas simuladas, no una cuenta de pago real.
 
-Se guarda `data/ontology-draft.json`. Lee [ONTOLOGIA_E_IA.md](ONTOLOGIA_E_IA.md) antes de continuar: explica reanudación, revisión y clasificación con la taxonomía aprobada. No interpretes `complete_headers=true` como contenido completo analizado.
+## 8. Actualizar y detener
 
-## 6. Qué hacer después de instalar
+Vuelve a ejecutar `run.py`, opción **Actualizar Gmail con la estructura existente**, o utiliza `refresh` según [OPERACION.md](OPERACION.md). Por defecto solo crea propuestas. Para automatizar etiquetas conocidas hace falta una política explícitamente aprobada. El programa no instala un servicio de fondo: puedes programar `refresh` con el programador de tareas del sistema.
 
-Si tu objetivo es el sistema semántico completo, el siguiente paso es continuar el desarrollo con [CONTINUAR_AQUI.md](../CONTINUAR_AQUI.md). **No ejecutes etiquetado masivo para compensar que aún falta el motor de contenido.**
+Ctrl+C detiene el proceso; conserva pasos confirmados y caché. La fase de ajuste de grupos puede recomenzar si se interrumpe antes de guardar su versión. Conserva `data` de forma privada al actualizar código. El ZIP no se actualiza solo.
 
-Si quieres probar la base actual de reglas y CSV, sigue los pasos 5–9 de [GUIA_PASO_A_PASO.md](GUIA_PASO_A_PASO.md). La secuencia es clasificar → revisar → aprobar unas pocas filas → aplicar con confirmación. Ningún proceso queda trabajando en segundo plano. El ordenador debe estar encendido y sin suspensión mientras se ejecuta un comando.
+## 9. Errores y retirada de acceso
 
-## 7. Retirar acceso y proteger tu copia
-
-- Google: retira el acceso desde [Conexiones de tu cuenta](https://myaccount.google.com/connections). Elimina también la entrada del llavero `email-organizer`, cuenta `default`, si quieres borrar el token local.
-- IA: revoca la clave desde la consola del proveedor si deja de usarse o sospechas exposición.
-- Revocar accesos no elimina etiquetas, CSV ni la base local. Guarda o elimina tus datos desde tu PC, con una política de copias que entiendas.
-- No pegues diagnósticos completos sin revisarlos. Comparte errores anonimizados, versiones y estado, nunca claves ni contenido real.
-
-## Solución de problemas iniciales
-
-- **Python incorrecto:** comprueba la versión y usa siempre el ejecutable de `.venv`.
-- **Archivo no encontrado:** abre la terminal en la raíz que contiene `pyproject.toml`.
-- **Llavero no compatible:** revisa la sesión y configuración de tu sistema; no rebajes a texto plano.
-- **Google deniega acceso:** revisa API habilitada, cliente de escritorio, usuario de prueba y políticas de organización.
-- **IA devuelve error de modelo o facturación:** comprueba el identificador y acceso en su consola. No pegues la clave para diagnosticarlo.
-- **ZIP antiguo:** descarga una versión nueva. No mezcles archivos de distintas versiones; conserva `data` como información privada y haz copia antes de migrar.
+- Comprueba Python, carpeta del proyecto y espacio libre. Usa `scripts/check_setup.py` con el Python de `.venv` para diagnóstico sin valores de secretos.
+- No eludas TLS, llavero o permisos. Si falla un modelo, revisa red/espacio; puedes escoger el motor ligero explícitamente.
+- Si Google deniega acceso, revisa Gmail API, cliente de escritorio, usuarios de prueba y políticas de empresa.
+- Si falla la IA externa, revisa modelo y facturación en su consola, sin pegar claves en chats.
+- Para retirar Gmail, usa [Conexiones de tu cuenta](https://myaccount.google.com/connections) y elimina tokens `readonly`/`default` del llavero si procede.
+- Revocar acceso no elimina etiquetas ni datos locales. Revoca claves API desde la consola si sospechas exposición.
+- Las instrucciones de cada sistema no equivalen a una validación en todos ellos. Comparte errores anonimizados, no logs con correo real.

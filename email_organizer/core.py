@@ -1,13 +1,14 @@
-import json
 import sqlite3
-import time
-from datetime import datetime, timezone
+import os
 from pathlib import Path
 
 
 def connect(path):
-    Path(path).parent.mkdir(parents=True, exist_ok=True)
+    Path(path).parent.mkdir(parents=True, exist_ok=True, mode=0o700)
+    new_file = not Path(path).exists()
     db = sqlite3.connect(path)
+    if new_file and os.name != 'nt':
+        Path(path).chmod(0o600)
     db.row_factory = sqlite3.Row
     db.executescript('''
       CREATE TABLE IF NOT EXISTS messages (
@@ -18,68 +19,39 @@ def connect(path):
       CREATE TABLE IF NOT EXISTS events (
         timestamp TEXT, source TEXT, id TEXT, action TEXT, detail TEXT);
       CREATE TABLE IF NOT EXISTS ai_cache (cache_key TEXT PRIMARY KEY, result TEXT);
+      CREATE TABLE IF NOT EXISTS content (
+        source TEXT, id TEXT, raw BLOB, text TEXT, main_text TEXT, attachments TEXT,
+        content_hash TEXT, status TEXT, error TEXT, thread_id TEXT, parser_version TEXT,
+        PRIMARY KEY(source,id));
+      CREATE TABLE IF NOT EXISTS sync_state (source TEXT PRIMARY KEY, history_id TEXT);
+      CREATE TABLE IF NOT EXISTS semantic_results (
+        source TEXT, id TEXT, model_version TEXT, content_hash TEXT, labels TEXT,
+        score REAL, status TEXT, PRIMARY KEY(source,id));
+      CREATE TABLE IF NOT EXISTS plans (
+        id TEXT PRIMARY KEY, created TEXT, source TEXT, state TEXT, digest TEXT);
+      CREATE TABLE IF NOT EXISTS operations (
+        plan_id TEXT, source TEXT, id TEXT, proposal_hash TEXT, content_hash TEXT,
+        labels TEXT, approved INTEGER DEFAULT 0, state TEXT DEFAULT 'pending',
+        added TEXT, error TEXT, PRIMARY KEY(plan_id,source,id));
+      CREATE INDEX IF NOT EXISTS operations_message ON operations(source,id,state);
     ''')
     columns = {row[1] for row in db.execute('PRAGMA table_info(messages)')}
     for name, definition in {'topic': 'TEXT', 'entity': "TEXT DEFAULT ''", 'confidence': 'REAL', 'topic_reason': 'TEXT'}.items():
         if name not in columns:
             db.execute(f'ALTER TABLE messages ADD COLUMN {name} {definition}')
     db.commit()
+    semantic_columns = {row[1] for row in db.execute('PRAGMA table_info(semantic_results)')}
+    for name, definition in {'cleanup_reason': "TEXT DEFAULT ''", 'size_bytes': 'INTEGER DEFAULT 0'}.items():
+        if name not in semantic_columns:
+            db.execute(f'ALTER TABLE semantic_results ADD COLUMN {name} {definition}')
+    db.commit()
     return db
 
 
-def load_rules(path):
-    rules = json.loads(Path(path).read_text(encoding='utf-8'))
-    for key in ('newsletter_days', 'notification_days', 'bulk_days'):
-        if not isinstance(rules[key], int) or rules[key] < 1:
-            raise ValueError(f'{key} debe ser un entero positivo')
-    for key in ('protected_words', 'notification_senders', 'protected_senders'):
-        if not isinstance(rules[key], list) or any(not isinstance(x, str) or not x.strip() for x in rules[key]):
-            raise ValueError(f'{key} debe contener textos no vacíos')
-    return rules
-
-
-def classify(message, rules, now=None):
-    now = now or datetime.now(timezone.utc)
-    text = (message['sender'] + ' ' + message['subject']).casefold()
-    try:
-        date = datetime.fromisoformat(message['date'])
-        age = (now - date).days if date.tzinfo else None
-    except (ValueError, TypeError):
-        age = None
-    if message['protected'] or any(w.casefold() in text for w in rules['protected_words']) or any(s.casefold() in message['sender'].casefold() for s in rules['protected_senders']):
-        return 'Conservar', False, 'Destacado, importante o posible documento sensible'
-    if message['unsubscribe']:
-        category, threshold = 'Newsletters', rules['newsletter_days']
-    elif any(s.casefold() in message['sender'].casefold() for s in rules['notification_senders']):
-        category, threshold = 'Notificaciones', rules['notification_days']
-    elif message['precedence'].casefold() in ('bulk', 'list', 'junk'):
-        category, threshold = 'Correo masivo', rules['bulk_days']
-    else:
-        return 'Otros', False, 'Sin criterio suficiente; conservar para revisión'
-    candidate = age is not None and age >= threshold
-    return category, candidate, f'{category}; antigüedad {age if age is not None else "desconocida"} días; umbral {threshold}'
-
 
 def store(db, source, identifier, metadata):
-    db.execute('''INSERT OR IGNORE INTO messages
-      (source,id,sender,subject,date,unsubscribe,precedence,protected)
-      VALUES (?,?,?,?,?,?,?,?)''', (source, identifier, *[metadata[k] for k in ('sender', 'subject', 'date', 'unsubscribe', 'precedence', 'protected')]))
-
-
-def run(db, rules, batch_size=200):
-    if batch_size < 1:
-        raise ValueError('El lote debe ser positivo')
-    total = db.execute('SELECT count(*) FROM messages WHERE category IS NULL').fetchone()[0]
-    done, start = 0, time.monotonic()
-    while True:
-        rows = db.execute('SELECT * FROM messages WHERE category IS NULL LIMIT ?', (batch_size,)).fetchall()
-        if not rows:
-            break
-        with db:
-            for row in rows:
-                category, candidate, reason = classify(row, rules)
-                db.execute('UPDATE messages SET category=?,candidate=?,reason=? WHERE source=? AND id=?', (category, candidate, reason, row['source'], row['id']))
-        done += len(rows)
-        rate = done / max(time.monotonic() - start, .001)
-        print(f'{done}/{total}; {rate:.1f} correos/s; quedan ~{(total-done)/rate:.1f}s de clasificación local', flush=True)
-    return done
+    db.execute('''INSERT INTO messages (source,id,sender,subject,date,unsubscribe,precedence,protected)
+        VALUES (?,?,?,?,?,?,?,?) ON CONFLICT(source,id) DO UPDATE SET
+        sender=excluded.sender,subject=excluded.subject,date=excluded.date,unsubscribe=excluded.unsubscribe,
+        precedence=excluded.precedence,protected=excluded.protected''',
+        (source, identifier, *[metadata[k] for k in ('sender', 'subject', 'date', 'unsubscribe', 'precedence', 'protected')]))

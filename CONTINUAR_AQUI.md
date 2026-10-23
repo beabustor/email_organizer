@@ -1,13 +1,11 @@
 # Continuar en otra conversación
 
-No necesitas compartir el historial del chat ni tus credenciales. Copia este mensaje junto al enlace de tu repositorio:
+Copia el enlace del repositorio y este mensaje; no hace falta el historial del chat:
 
-> Trabaja en este repositorio. Lee README.md, AGENTS.md, docs/ESPECIFICACION.md y docs/METODO_Y_CALIDAD.md. El objetivo es un organizador local de unos 30.000 correos: analizar cuerpo y conversaciones, descubrir temas y entidades, inducir una taxonomía revisable y demostrar calidad antes de aplicar etiquetas o automatizar el correo nuevo. La versión actual solo procesa cabeceras; no la presentes como un sistema semántico completo. Empieza implementando y probando la fase 1: adquisición local de contenido Gmail/MBOX, parser MIME, trazabilidad y reanudación. Continúa las fases en orden, preservando las protecciones y añadiendo los controles pendientes de uso masivo. No publiques datos privados. Mi PC y mis cuentas se configuran siguiendo docs/INSTALACION_PC.md; no me pidas secretos en el chat.
+> Lee README.md, AGENTS.md, docs/ESPECIFICACION.md y docs/TECNOLOGIA.md. Este proyecto ya implementa adquisición del contenido Gmail/MBOX, embeddings multilingües locales o LSA, agrupación y etiquetas anidadas, limpieza revisable por grupo, planes con hash, aplicación/deshacer y actualización con política opcional. No lo describas como una base solo de cabeceras. Revisa los tests y el estado real antes de ampliar. El objetivo es organización útil por contenido y calidad demostrada con ejemplos revisados, no clasificaciones inventadas para aparentar 100%. Prioriza validar en el PC del usuario con datos privados que no se comparten, mejorar nombres/taxonomía y medir categorías con test independiente. Para llevar mejoras privadas al público sigue docs/PUBLICAR_MEJORAS.md. No pidas claves por chat ni publiques correos o índices.
 
-Información útil que puedes aportar: sistema operativo, versión de Python, RAM, espacio libre, preferencia por IA local/API y formato de importación Gmail/MBOX. No adjuntes correos reales ni credenciales; los ejemplos deben ser ficticios o anonimizados, incluidos sus metadatos.
+Información útil: sistema operativo, Python, RAM, espacio disponible, commit usado, backend y errores anonimizados. No adjuntes MBOX, credenciales ni informes privados.
 
-## La nube y tu PC son máquinas diferentes
+Una conversación cloud no ve tu PC o repositorio privado automáticamente. Las claves locales no se trasladan al chat. Conecta una herramienta local autorizada o ejecuta los comandos en tu PC y comparte solo resultados revisados.
 
-La conversación puede desarrollar y probar con datos ficticios. Eso no le da acceso a tu ordenador o Gmail. Las credenciales locales no se trasladan a una nueva conversación; las operaciones sobre tu cuenta se ejecutan en tu PC o mediante una herramienta local conectada y autorizada por ti.
-
-Si descargaste un ZIP, no se actualizará solo: descarga la nueva versión cuando corresponda y conserva tus datos privados aparte. Git permite actualizar código, pero tampoco publica ni actualiza archivos ignorados automáticamente. Revisa los cambios antes de ejecutarlos.
+Si usas ZIP, vuelve a descargar cuando haya cambios y conserva `data` de forma privada. Las mejoras generales se trasladan por commits/parches revisados; no se convierte el repositorio privado entero en público.

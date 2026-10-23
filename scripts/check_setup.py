@@ -13,13 +13,13 @@ def main():
     print('Entorno virtual:', 'sí' if sys.prefix != sys.base_prefix else 'no')
     print('SQLite:', sqlite3.sqlite_version)
     print('Directorio del proyecto:', 'correcto' if Path('pyproject.toml').exists() else 'abre la terminal en la raíz del repositorio')
-    for package in ('google-api-python-client', 'google-auth-oauthlib', 'keyring'):
+    for package in ('google-api-python-client', 'google-auth-oauthlib', 'keyring', 'scikit-learn', 'sentence-transformers', 'torch'):
         try:
             print(package + ':', importlib.metadata.version(package))
         except importlib.metadata.PackageNotFoundError:
             print(package + ': no instalado')
     print('JSON OAuth local:', 'presente' if Path('data/credentials.json').is_file() else 'no encontrado')
-    print('Variable API IA:', 'presente' if os.environ.get('EMAIL_ORGANIZER_AI_KEY') else 'ausente (opcional; puedes usar scripts/run_ai.py)')
+    print('Variable API IA:', 'presente' if os.environ.get('EMAIL_ORGANIZER_AI_KEY') else 'ausente (opcional; puedes usar scripts/name_topics.py)')
     try:
         import keyring
         backend = type(keyring.get_keyring()).__module__

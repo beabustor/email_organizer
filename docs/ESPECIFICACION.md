@@ -1,70 +1,37 @@
-# Especificación, prioridades y seguridad
+# Especificación y estado de implementación
 
-## Objetivo acordado
+## Objetivo
 
-Sistema local que estudie unos 30.000 correos, descubra temas y entidades a partir del contenido, proponga una jerarquía humana revisable y demuestre su calidad antes de organizar el histórico y el correo nuevo.
+Sistema local para estudiar un histórico completo de correo, descubrir temas y entidades, proponer una jerarquía comprensible, demostrar calidad con ejemplos revisados y reutilizar la estructura para organizar correo nuevo. Objetivo adicional: facilitar limpieza de almacenamiento con candidatos explicables dentro de cada grupo, sin borrado automático ni cifras ambientales inventadas.
 
-Código público reutilizable; cada persona configura cuentas y claves en su PC. Gmail primero; Outlook/Hotmail después. No vincular el repositorio a una cuenta particular.
+## Implementado en 0.2
 
-## Principios
+- Importación de originales MIME y texto Gmail/MBOX, parser pasivo y estado de extracción.
+- Gmail en solo lectura para adquisición, sesión de escritura separada, historial incremental y reconciliación al caducar.
+- Embeddings locales multilingües con todos los fragmentos del texto, o TF-IDF/LSA como referencia ligera.
+- Grupos y padres descubiertos, nombres por términos y renombrado API opcional.
+- Resultados para todos los registros: propuesta o revisión. Adjuntos/cifrado no comprendidos se declaran, no se ocultan.
+- Exportación SKOS y entidades por dominio, con límites para no generar miles de etiquetas.
+- Plan HTML/CSV con hash, motivo de limpieza y bytes originales. Aprobación exacta, límites, cuenta verificada, registro de intento y deshacer.
+- Política opcional para etiquetar correo nuevo en categorías conocidas; nunca limpieza/revisión automática.
+- Evaluación de etiquetas humanas con métricas por categoría e incertidumbre; exportación pública agregada opcional.
+- Asistente local, preparación de entorno y guías de instalación/contribución privada a pública.
 
-- El cuerpo y la conversación son evidencia principal junto con metadatos. No confundir análisis de cabeceras con comprensión completa.
-- Separar tema, entidad, tipo documental y acción. Gmail permite varias etiquetas anidadas sin duplicar mensajes.
-- Descubrir antes de fijar carpetas. El catálogo actual es una referencia de diagnóstico.
-- Registrar contenido procesado, omitido y fallido. No fingir cobertura, confianza o precisión.
-- Coste visible y acotado. Preferir reglas/modelos locales cuando funcionen. IA externa opcional con consentimiento. Límite de llamadas no equivale a presupuesto monetario.
-- Sin borrado automático por clasificación. Revisión, trazabilidad y pruebas de reversión antes de ampliar acciones remotas.
+## Límites que siguen abiertos
 
-## Fases de implementación en orden
+- No existe precisión universal garantizada ni evaluación independiente de una cuenta real. Las pruebas funcionales no prueban calidad humana.
+- El modelo de embeddings y la agrupación son candidatos razonables, no «el mejor» sistema demostrado. Falta comparar alternativas sobre ejemplos reales revisados.
+- No se hace OCR ni se extraen PDF/audio/otros adjuntos. Se conserva su original y se protege su limpieza por defecto.
+- No hay resolución avanzada de entidades, detección robusta de idioma por mensaje ni clasificador supervisado que aprenda de correcciones.
+- La base no tiene cifrado propio. Se apoya en permisos de archivos/sesión y cifrado del sistema.
+- Las versiones de modelos y planes no deben editarse a mano; no son artefactos firmados contra un atacante con control del PC.
+- No se soportan procesos de escritura simultáneos sobre un mismo plan. Reversión y ediciones externas concurrentes idénticas no son distinguibles.
+- No hay instalador firmado, aplicación gráfica completa o servicio de fondo. Hay asistente de terminal e informe HTML local.
+- Outlook/Hotmail sigue pendiente. La compatibilidad de instalación en cada SO requiere validación y CI.
+- Las APIs Gmail y de nombres se han probado con dobles; el usuario debe validar su OAuth y cuenta antes de cambios amplios.
 
-### 1. Adquisición del contenido — siguiente prioridad
+## Requisitos antes de uso desatendido
 
-Añadir opción explícita de descarga de cuerpos Gmail/MBOX. Parsear MIME y texto HTML sin abrir enlaces o imágenes remotas. Conservar mensaje, conversación, origen y versión del parser. Reanudar, deduplicar y distinguir mensajes completos/parciales. Migraciones SQLite compatibles.
+Revisar la estructura, comprobar ejemplos, evaluar categorías y sus errores, aprobar una política acotada y probar deshacer. Mantener fuera de automatización clases con calidad insuficiente. Tener espacio y copias locales protegidas, revisar retención/coste del proveedor si se envían ejemplos, evitar ejecuciones solapadas y conservar trazabilidad de versión.
 
-**Aceptación:** pruebas de texto, HTML, multipart, idiomas/codificaciones, citas, firmas, mensajes largos, partes vacías e interrupciones. Los fallos no se descartan silenciosamente. Descargar un cuerpo no autoriza enviarlo a IA.
-
-### 2. Motor semántico local
-
-Evaluar embeddings multilingües, fragmentación de textos largos y agregación por mensaje/conversación. Índices y cachés privados. Comparar BERTopic/HDBSCAN con alternativas por estabilidad y utilidad. Documentar requisitos y licencias antes de instalar modelos grandes.
-
-**Aceptación:** cobertura real del contenido, ejemplos representativos, mensajes sin grupo, consumo de recursos y reanudación. Agrupación no equivale a calidad de clasificación demostrada.
-
-### 3. Taxonomía y entidades
-
-Borrador personalizado con sinónimos, padres/hijos, evidencia e identificadores estables, inspirado en SKOS. Resolver entidades con evidencia: un dominio no equivale siempre a una organización. Revisar fusiones/divisiones y controlar proliferación de etiquetas.
-
-**Aceptación:** versión aprobada, ejemplos trazables y migración al cambiar nombres. No aplicar una nueva ontología sin invalidar aprobaciones afectadas.
-
-### 4. Calidad independiente
-
-Datos revisados y test independiente, separado por conversaciones/duplicados y tiempo. Comparar reglas, TF-IDF + clasificador lineal y embeddings + clasificador multietiqueta. Mostrar precisión, recall y F1 por categoría, cobertura, tamaño de muestra e incertidumbre.
-
-**Aceptación:** informe reproducible, con categorías aptas/no aptas para automatización según objetivos acordados. No convertir confianza declarada de la IA en precisión demostrada. Véase METODO_Y_CALIDAD.md.
-
-### 5. Operaciones Gmail y correo nuevo
-
-Aplicar propuestas aprobadas por lotes con registro y reversión probada. Historial incremental Gmail, manejo de caducidad del cursor y reconciliación. Cola de revisión, detección de temas nuevos y correcciones. Outlook/Hotmail posteriormente con Graph y sus propias pruebas.
-
-**Aceptación:** operaciones idempotentes, límites, recuperación y deshacer. Cada acción (etiquetar, archivar, papelera) tiene su política y permiso; esta versión no implementa las dos últimas.
-
-## Requisitos antes de uso masivo o desatendido
-
-Estas son tareas pendientes; no una certificación de seguridad del código actual:
-
-- OAuth por mínimo privilegio y fases: evaluar un modo de solo lectura para adquisición; solicitar escritura al aplicar. Actualmente se solicita `gmail.modify` desde la conexión inicial.
-- Aprobaciones ligadas a una versión o hash del plan, no solo al ID de mensaje. Un CSV antiguo debe rechazarse si cambió la propuesta. Hoy ese control estricto no existe.
-- Previsualización exacta de todas las acciones, máximo de cambios por ejecución y límites por cuenta. Detenerse ante anomalías.
-- Registro durable y recuperación entre petición remota y confirmación local; deshacer únicamente etiquetas añadidas por el programa, preservando las previas.
-- Reintentos, cuotas, errores de permisos, mensajes desaparecidos y credenciales caducadas probados. Prueba de integración real sobre una cuenta de prueba con datos ficticios.
-- Tokens en llavero; datos locales protegidos mediante permisos, cifrado de disco y copias de seguridad verificadas. La base SQLite actual no está cifrada por la aplicación.
-- Texto de emails tratado como datos no confiables: no ejecutar instrucciones, seguir enlaces ni abrir adjuntos. Un prompt por sí solo no es aislamiento suficiente.
-- Políticas explícitas por tipo de dato enviado a IA, minimización, coste estimado/consumo y límites; timeout y recuperación sin exponer cuerpos o claves en errores.
-- Dependencias reproducibles, revisión de vulnerabilidades y validación en Windows/macOS/Linux. Las instrucciones de instalación no equivalen a pruebas en esos tres sistemas.
-
-## Qué funciona hoy
-
-Importación de cabeceras, inventario, ontología opcional de cabeceras con IA, reglas temáticas, entidades por dominio, revisión CSV y etiquetas aprobadas. Pruebas con datos ficticios y API simulada. Sin certificación de seguridad ni evaluación semántica sobre correo real.
-
-## Qué no se necesita ahora
-
-MySQL, Docker, servidor público, entrenamiento de redes desde cero o cientos de carpetas prefijadas. SQLite basta inicialmente. No instalar BERTopic ni un LLM local solo para aparentar que el motor completo existe.
+La intención no es «forzar que todo parezca bien clasificado», sino que no exista correo ignorado: cada uno tiene un estado explícito. `Revision necesaria` es un resultado honesto, no evidencia de clasificación temática correcta.

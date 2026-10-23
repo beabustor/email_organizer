@@ -25,6 +25,8 @@ En Windows también puedes abrir `Iniciar-Windows.bat`. El asistente crea `.venv
 
 **La primera descarga del motor neural ocupa cientos de MB de pesos y las bibliotecas pueden ocupar varios GB.** El PC debe permanecer encendido. El tiempo con 30.000 mensajes depende de longitud, adjuntos, red y CPU; no prometemos minutos ni una cantidad fija de carpetas.
 
+**Dónde guardarlo:** empieza en tu PC. La descarga es por lotes, pero la organización se descubre sobre el histórico conjunto. Se conservan los originales locales; no hay purga automática. Consulta [espacio, copias y nube](docs/ALMACENAMIENTO_Y_EJECUCION.md). También existen [alternativas como Inbox Zero y componentes reutilizables](docs/ALTERNATIVAS.md) que conviene evaluar.
+
 ## Qué sucede
 
 1. **Descarga completa:** Gmail en modo de solo lectura, originales MIME y texto; o importación de MBOX. Guarda progreso en SQLite. Incluye spam/papelera salvo exclusión explícita.
@@ -89,6 +91,8 @@ Los nombres y grupos se descubren en tu histórico. La subcarpeta de candidatos 
 
 ## Documentación y continuidad
 
+- [Dónde ejecutar, almacenamiento y copias](docs/ALMACENAMIENTO_Y_EJECUCION.md).
+- [Soluciones existentes y comparación](docs/ALTERNATIVAS.md).
 - [Instalar, conectar y ejecutar](docs/INSTALACION_PC.md).
 - [Comandos, revisión, automatización y deshacer](docs/OPERACION.md).
 - [Arquitectura y próximos límites](docs/ESPECIFICACION.md).
@@ -105,7 +109,7 @@ Código público o privado, **datos siempre locales y fuera de Git**. Una conver
 ```sh
 python -m venv .venv
 # Usa .venv/bin/python o .venv\Scripts\python.exe según tu sistema:
-python -m pip install -e '.[gmail,semantic]'
+python -m pip install -e '.[gmail,semantic,attachments]'
 python -m unittest discover -s tests -v
 python -m pip check
 ```

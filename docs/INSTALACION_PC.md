@@ -11,6 +11,8 @@
 
 No necesitas MySQL, Node.js o Docker. El tamaño del buzón y adjuntos determina cuánto disco hace falta, no solo los 30.000 mensajes. Los originales MIME incluyen adjuntos. Antes de empezar, revisa el espacio disponible y protege el disco con cifrado del sistema. No instales en una carpeta compartida o sincronizada sin quererlo.
 
+Para decidir entre PC y nube, estimar disco y entender qué se conserva, consulta [almacenamiento y ejecución](ALMACENAMIENTO_Y_EJECUCION.md). Como referencia orientativa, con unos 15 GB ocupados específicamente por Gmail reserva inicialmente 30–50 GB libres; comprueba el crecimiento real. No es un requisito medido.
+
 ## 2. Descargar
 
 En GitHub puedes usar el repositorio original, hacer tu copia pública o importarlo como privado. Para una copia privada utiliza **+ → Import repository → Private**; un fork público no es la vía para privatizarlo.

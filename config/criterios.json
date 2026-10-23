@@ -1,0 +1,8 @@
+{
+  "newsletter_days": 180,
+  "notification_days": 365,
+  "bulk_days": 365,
+  "protected_words": ["factura", "invoice", "recibo", "receipt", "contrato", "contract", "impuesto", "tax", "seguridad", "security", "password", "contraseña", "médico", "medical", "salud", "health", "legal", "banco", "bank", "reserva", "booking", "pedido", "order", "pago", "payment"],
+  "notification_senders": ["noreply", "no-reply", "notifications", "notification"],
+  "protected_senders": []
+}

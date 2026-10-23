@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="650" viewBox="0 0 1100 650" role="img" aria-labelledby="title desc">
+ <title id="title">Antes: bandeja de Gmail sin clasificar, simulación</title>
+ <desc id="desc">Una bandeja ficticia mezcla newsletters antiguas, notificaciones, una factura y un correo personal. No contiene datos reales.</desc>
+ <rect width="1100" height="650" rx="20" fill="#f6f8fc"/>
+ <g font-family="Arial,sans-serif" fill="#202124">
+  <text x="30" y="44" font-size="25" font-weight="bold">Gmail · Antes de organizar</text>
+  <rect x="740" y="18" width="330" height="36" rx="18" fill="#ffedc2"/>
+  <text x="760" y="42" font-size="15" font-weight="bold">SIMULACIÓN · DATOS FICTICIOS</text>
+  <rect x="250" y="76" width="820" height="48" rx="24" fill="#e9eef6"/>
+  <text x="275" y="106" font-size="17" fill="#5f6368">Buscar en el correo</text>
+  <rect x="18" y="84" width="193" height="50" rx="16" fill="#c2e7ff"/>
+  <text x="48" y="115" font-size="18">Redactar</text>
+  <rect x="10" y="153" width="218" height="38" rx="19" fill="#d3e3fd"/>
+  <text x="28" y="178" font-size="16" font-weight="bold">Recibidos</text><text x="169" y="178" font-size="15">28.450</text>
+  <text x="28" y="218" font-size="16">Destacados</text><text x="28" y="258" font-size="16">Enviados</text><text x="28" y="298" font-size="16">Borradores</text>
+  <text x="28" y="366" font-size="16" font-weight="bold">Etiquetas</text><text x="28" y="401" font-size="14" fill="#5f6368">Sin clasificación propia</text>
+  <rect x="250" y="145" width="820" height="400" rx="16" fill="white"/>
+  <text x="274" y="180" font-size="19" font-weight="bold">Principal</text><text x="940" y="180" font-size="14">1–6 de 28.450</text>
+  <path d="M250 200H1070 M250 253H1070 M250 306H1070 M250 359H1070 M250 412H1070 M250 465H1070" stroke="#e1e5eb"/>
+  <g font-size="15">
+   <text x="273" y="233">□ ☆</text><text x="335" y="233">Boletín Ejemplo</text><text x="515" y="233">Novedades de la semana</text><text x="961" y="233">12/01/24</text>
+   <text x="273" y="286">□ ☆</text><text x="335" y="286">Notificaciones</text><text x="515" y="286">Resumen de actividad</text><text x="961" y="286">03/06/24</text>
+   <text x="273" y="339">□ ★</text><text x="335" y="339">Proveedor Ejemplo</text><text x="515" y="339">Factura de septiembre</text><text x="961" y="339">01/10/26</text>
+   <text x="273" y="392">□ ☆</text><text x="335" y="392">Ana Ejemplo</text><text x="515" y="392">¿Quedamos el sábado?</text><text x="961" y="392">20/10/26</text>
+   <text x="273" y="445">□ ☆</text><text x="335" y="445">Club Ejemplo</text><text x="515" y="445">Ofertas de temporada</text><text x="961" y="445">05/02/24</text>
+   <text x="273" y="498">□ ☆</text><text x="335" y="498">Boletín Ejemplo</text><text x="515" y="498">Novedades de este mes</text><text x="961" y="498">21/10/26</text>
+  </g>
+  <text x="30" y="589" font-size="19" font-weight="bold">Un histórico grande, con correos de distintos tipos mezclados.</text>
+  <text x="30" y="620" font-size="16" fill="#5f6368">Ilustración orientativa. No es una captura real ni una predicción de tus resultados.</text>
+ </g>
+</svg>

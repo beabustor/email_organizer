@@ -6,6 +6,8 @@
 
 Proyecto independiente en fase de validación. **Usa inteligencia artificial:** embeddings multilingües locales opcionales, machine learning y procesamiento del lenguaje natural. No exige una suscripción a ChatGPT. No promete una clasificación perfecta ni está avalado por Stanford.
 
+**Alcance de este repositorio:** leer correo y adjuntos, descubrir temas y entidades, proponer etiquetas y facilitar limpieza revisable. No extrae datos contables ni genera libros Excel empresariales; esa explotación pertenece a otro proyecto. El CSV existente sirve únicamente para revisar y aprobar la organización.
+
 ## Empieza en tu PC
 
 1. Instala **Python 3.11 o posterior** desde [python.org](https://www.python.org/downloads/).

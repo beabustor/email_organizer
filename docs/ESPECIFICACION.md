@@ -4,6 +4,10 @@
 
 Sistema local para estudiar un histórico completo de correo, descubrir temas y entidades, proponer una jerarquía comprensible, demostrar calidad con ejemplos revisados y reutilizar la estructura para organizar correo nuevo. Objetivo adicional: facilitar limpieza de almacenamiento con candidatos explicables dentro de cada grupo, sin borrado automático ni cifras ambientales inventadas.
 
+## Fuera de alcance
+
+Extracción contable o empresarial, análisis de negocio y exportación a libros Excel. Esas funciones se desarrollarán en otro repositorio. El CSV de este proyecto es un mecanismo de revisión de etiquetas, no una herramienta de explotación empresarial. No añadir estas funciones al asistente, esquema SQLite ni dependencias.
+
 ## Implementado en 0.3
 
 - Importación de originales MIME y texto Gmail/MBOX, parser pasivo y estado de extracción.

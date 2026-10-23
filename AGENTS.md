@@ -1,6 +1,7 @@
 # Instrucciones de continuidad
 
 - Lee README.md, docs/ESPECIFICACION.md, docs/TECNOLOGIA.md y docs/METODO_Y_CALIDAD.md.
+- Mantén este repositorio centrado en clasificación, OCR, etiquetas y limpieza revisable. No mezcles extracción empresarial, contabilidad ni exportaciones Excel: el usuario las hará en otro repositorio. El CSV de aprobación sí forma parte del organizador.
 - Objetivo: descubrir organización por contenido completo y entidades, validar calidad y reutilizar la estructura. La base ya implementa cuerpos, motores locales, planes, limpieza por grupo y actualización; no vuelvas al enfoque de solo cabeceras.
 - No prometas acierto universal: todo mensaje tiene propuesta o revisión. Similitud, tests funcionales y corpus sintéticos no son precisión sobre correo real.
 - Usa checkout existente, sin worktrees salvo petición. Las tareas cloud están aisladas.

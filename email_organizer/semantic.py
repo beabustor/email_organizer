@@ -112,6 +112,8 @@ def fit(db, directory, source=None, backend='lsa', neural_model='sentence-transf
 
 
 def _fit(db, directory, source, backend, neural_model, max_topics, threshold):
+    from .content import reextract
+    reextract(db, source)
     import numpy as np
     from sklearn.cluster import MiniBatchKMeans
     from sklearn.decomposition import TruncatedSVD
@@ -130,7 +132,7 @@ def _fit(db, directory, source, backend, neural_model, max_topics, threshold):
     metadata = {'backend': backend, 'neural_model': neural_model, 'threshold': threshold, 'topics': [],
                 'total_messages': len(rows), 'analyzed_messages': len(eligible), 'unique_texts': len(unique),
                 'source': source, 'state': 'draft', 'metrics': 'Similitud geométrica, no probabilidad de acierto',
-                'attachments_analyzed': False}
+                'attachments_analyzed': 'supported_formats_with_explicit_coverage'}
     if not rows:
         raise ValueError('No hay mensajes importados. Usa gmail-download o import-full antes de analizar.')
     if not unique:
@@ -217,6 +219,8 @@ def read_model(directory):
 
 
 def classify(db, directory, source=None):
+    from .content import reextract
+    reextract(db, source)
     import numpy as np
     from sklearn.feature_extraction.text import TfidfVectorizer
     from sklearn.preprocessing import normalize

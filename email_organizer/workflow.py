@@ -2,10 +2,13 @@
 import json
 from pathlib import Path
 
-COMMANDS = {'import-full', 'gmail-download', 'analyze', 'predict', 'plan', 'approve-plan', 'apply-plan', 'undo-plan', 'evaluate', 'name-topics', 'authorize-automation', 'refresh'}
+COMMANDS = {'extract-attachments', 'import-full', 'gmail-download', 'analyze', 'predict', 'plan', 'approve-plan', 'apply-plan', 'undo-plan', 'evaluate', 'name-topics', 'authorize-automation', 'refresh'}
 
 
 def register(sub):
+    p = sub.add_parser('extract-attachments', help='Reextrae originales locales sin descargarlos otra vez; invalida planes afectados')
+    p.add_argument('--source')
+    p.add_argument('--retry', action='store_true', help='Reintenta también adjuntos tras instalar OCR/lectores')
     p = sub.add_parser('name-topics', help='IA opcional: nombres humanos a grupos descubiertos localmente')
     p.add_argument('--model-dir', default='data/semantic')
     p.add_argument('--provider', choices=['openai', 'anthropic'], required=True)
@@ -55,7 +58,10 @@ def register(sub):
 
 
 def execute(args, db):
-    if args.command == 'name-topics':
+    if args.command == 'extract-attachments':
+        from .content import reextract
+        print('Mensajes reextraídos:', reextract(db, args.source, args.retry))
+    elif args.command == 'name-topics':
         if not args.consent_send_examples:
             raise ValueError('Requiere --consent-send-examples: envía palabras clave y hasta dos ejemplos de 1500 caracteres por grupo al proveedor elegido.')
         from .naming import name_topics

@@ -15,11 +15,11 @@ def main():
     if not python.exists():
         print('Preparando entorno privado de Python…', flush=True)
         venv.EnvBuilder(with_pip=True).create(root / '.venv')
-    marker = root / '.venv' / 'email-organizer-0.2-ready'
+    marker = root / '.venv' / 'email-organizer-0.3-ready'
     if not marker.exists():
         print('Instalando bibliotecas de Gmail y machine learning; no se conecta ninguna cuenta.', flush=True)
-        subprocess.run([str(python), '-m', 'pip', 'install', '-e', '.[gmail,semantic]'], check=True)
-        marker.write_text('0.2', encoding='utf-8')
+        subprocess.run([str(python), '-m', 'pip', 'install', '-e', '.[gmail,semantic,attachments]'], check=True)
+        marker.write_text('0.3', encoding='utf-8')
     return subprocess.call([str(python), '-m', 'email_organizer.wizard'])
 
 

@@ -2,6 +2,8 @@
 
 **Descarga tu correo, analiza el texto completo y descubre una organización por temas y entidades.** Revisa una propuesta de etiquetas anidadas, localiza candidatos de limpieza dentro de cada grupo y reutiliza la estructura para lo nuevo.
 
+**ChatGPT es externo. La IA local de este proyecto es un modelo multilingüe descargado en tu PC; no es ChatGPT.** OpenAI/Claude son servicios externos opcionales y solo reciben ejemplos si lo autorizas.
+
 Proyecto independiente en fase de validación. **Usa inteligencia artificial:** embeddings multilingües locales opcionales, machine learning y procesamiento del lenguaje natural. No exige una suscripción a ChatGPT. No promete una clasificación perfecta ni está avalado por Stanford.
 
 ## Empieza en tu PC
@@ -35,7 +37,8 @@ En Windows también puedes abrir `Iniciar-Windows.bat`. El asistente crea `.venv
 
 | Componente | Implementación |
 | --- | --- |
-| Extracción de contenido | MIME de Python, texto/HTML pasivo, originales conservados |
+| Extracción de contenido | MIME, pypdf, DOCX/XML y lectores de texto en procesos separados; originales conservados |
+| OCR local | Tesseract inglés/español, Pillow y PDFium para imágenes/PDF escaneados |
 | Semántica neural local | Sentence Transformers + PyTorch CPU; modelo multilingüe `paraphrase-multilingual-MiniLM-L12-v2` |
 | Alternativa ligera | TF-IDF + LSA mediante TruncatedSVD, sin descargar un modelo neural |
 | Descubrimiento y jerarquía | MiniBatchKMeans sobre vectores normalizados; agrupación adicional de centroides para padres |
@@ -77,7 +80,7 @@ Los nombres y grupos se descubren en tu histórico. La subcarpeta de candidatos 
 - Planes con hash de contenido y versión; rechaza aprobaciones obsoletas y cuentas distintas.
 - Aplicación reanudable y reversión de etiquetas añadidas por el plan. No borra ni archiva. No elimina las carpetas vacías al deshacer.
 - Destacados, importantes, enviados, borradores, spam y papelera se analizan localmente pero se omiten al aplicar etiquetas.
-- No abre enlaces, imágenes remotas o adjuntos. **Los adjuntos se conservan dentro del MIME, pero no se interpretan ni se hace OCR.** No se afirma comprender imágenes, PDF, audio o correo cifrado.
+- No abre enlaces remotos ni ejecuta macros o aplicaciones asociadas. **Extrae texto de PDF, DOCX, TXT, CSV y HTML adjuntos; imágenes y PDF escaneados usan OCR local con Tesseract eng/spa.** Si falta OCR, el formato no se soporta o hay un error/límite, pasa a revisión. OCR no equivale a comprender fotografías, diagramas o gráficos; audio, archivos cifrados y otros formatos siguen requiriendo revisión.
 - La base local y los vectores no tienen cifrado propio: usa sesión privada, cifrado de disco y una política de copias. No ejecutes aplicación y modificaciones manuales de las mismas etiquetas simultáneamente.
 - La similitud no es una probabilidad de acierto. La calidad sobre tu cuenta debe medirse. No hay garantía de 100% de acierto.
 - Conector Gmail y fallos/reversión probados con API simulada; sin validación contra tu cuenta real. Las instrucciones Windows/macOS requieren validación en esos equipos.

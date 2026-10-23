@@ -121,3 +121,27 @@ Ctrl+C detiene el proceso; conserva pasos confirmados y caché. La fase de ajust
 - Para retirar Gmail, usa [Conexiones de tu cuenta](https://myaccount.google.com/connections) y elimina tokens `readonly`/`default` del llavero si procede.
 - Revocar acceso no elimina etiquetas ni datos locales. Revoca claves API desde la consola si sospechas exposición.
 - Las instrucciones de cada sistema no equivalen a una validación en todos ellos. Comparte errores anonimizados, no logs con correo real.
+
+## 10. Adjuntos y OCR local (versión 0.3)
+
+`run.py` instala lectores PDF/DOCX/texto. Un adjunto puede ser la evidencia principal aunque el cuerpo esté vacío. El texto extraído se incorpora al análisis semántico; el CSV muestra su estado.
+
+Para imágenes y PDF escaneados necesitas además **Tesseract**, un programa local distinto de ChatGPT:
+
+- Debian/Ubuntu: `sudo apt install tesseract-ocr tesseract-ocr-eng tesseract-ocr-spa`.
+- macOS con Homebrew ya instalado: `brew install tesseract`. Después utiliza el asistente de idiomas de abajo.
+- Windows: sigue la [guía de instalación de Tesseract](https://tesseract-ocr.github.io/tessdoc/Installation.html), instala la distribución recomendada y añade su carpeta a PATH. `pip install tesseract` no instala ese ejecutable nativo.
+
+Si faltan los datos de inglés o español, desde el Python de `.venv`:
+
+```sh
+python scripts/setup_ocr.py
+```
+
+Descarga solo los modelos eng/spa desde el repositorio oficial `tesseract-ocr/tessdata_fast`, verifica el hash Git del archivo y los guarda en `data/ocr`. El programa usa esos datos si están los dos. No descarga ni sube correos para configurarlo.
+
+Después, reintenta los originales locales con `extract-attachments --retry`, analiza y revisa un plan nuevo como explica OPERACION.md. No hace falta descargar Gmail otra vez.
+
+Límites actuales: 16 MiB por archivo, 20 adjuntos por mensaje, 100 páginas/fotogramas, un millón de caracteres por adjunto y 60 segundos por proceso lector. Si se alcanza un límite no se declara análisis completo. En sistemas POSIX se intentan límites de CPU/memoria; Windows depende del timeout y límites de formato. El proceso separado **no es un sandbox de seguridad completo**. No ejecuta macros, JS ni aplicaciones de documentos, pero mantén actualizados los lectores y el sistema.
+
+OCR recupera texto legible, no interpreta fotografías o gráficos ni garantiza transcripción perfecta. No abras automáticamente adjuntos no soportados para compensarlo. Los documentos cifrados y errores requieren intervención local y nunca contraseñas compartidas por chat.

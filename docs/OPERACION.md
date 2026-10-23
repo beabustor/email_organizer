@@ -38,7 +38,7 @@ Copia `config/cleanup.json` a **`data/cleanup.json`** y edita esa copia privada 
 - No candidato si hay importancia/destacado, fecha desconocida, contenido parcial, remitente protegido, palabras sensibles en asunto o cuerpo o adjuntos sin analizar.
 - Los casos de revisión semántica no reciben candidato automático.
 
-Son heurísticas conservadoras, no una garantía. La IA no determina que algo sea prescindible por cercanía a un grupo. Los originales MIME incluyen adjuntos, pero el extractor no los interpreta ni hace OCR. Gmail puede conservar mensajes en papelera según su política; el programa no gestiona esa retención.
+Son heurísticas conservadoras, no una garantía. La IA no determina que algo sea prescindible por cercanía a un grupo. Los originales MIME incluyen adjuntos. PDF, DOCX y texto pueden aportar evidencia; imágenes/PDF escaneados requieren Tesseract eng/spa. Si algún adjunto no se pudo procesar, el mensaje queda incompleto y no se propone para limpieza. Gmail puede conservar mensajes en papelera según su política; el programa no gestiona esa retención.
 
 El tamaño mostrado cuenta cada original una vez aunque tenga varias etiquetas. No representa ahorro efectivo ni CO₂. Al conservar copias locales, también existe almacenamiento local que gestionar.
 
@@ -85,6 +85,18 @@ python scripts/export_validation.py
 ```
 
 La evaluación informa precisión/recall/F1 por etiqueta, exact match e intervalos de confianza. **No acredita independencia:** el descubrimiento pudo ver esos mismos mensajes. Para demostrar generalización reserva correos futuros y sigue [METODO_Y_CALIDAD.md](METODO_Y_CALIDAD.md).
+
+## Actualizar la extracción de adjuntos
+
+Si vienes de 0.2, `analyze` reextrae los originales locales con el parser nuevo sin volver a descargarlos. Tras instalar OCR o lectores, puedes reintentar:
+
+```sh
+python -m email_organizer.cli extract-attachments --retry
+python -m email_organizer.cli analyze --backend neural
+python -m email_organizer.cli plan
+```
+
+Los cambios de evidencia invalidan planes anteriores. `adjuntos_estado` en el CSV distingue complete, needs_ocr, encrypted, unsupported, limit, timeout y error. Nunca interpretes un fallo como ausencia de información.
 
 ## Datos y privacidad
 

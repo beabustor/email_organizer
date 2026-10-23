@@ -25,7 +25,7 @@ def candidate(row, rules, now=None):
         return False, 'Posible contenido sensible o documento: conservar'
     if row['content_status'] != 'complete':
         return False, 'Contenido incompleto o no interpretable: revisar'
-    if rules.get('protect_unanalyzed_attachments', True) and json.loads(row['attachments'] or '[]'):
+    if rules.get('protect_unanalyzed_attachments', True) and any(not x['analyzed'] for x in json.loads(row['attachments'] or '[]')):
         return False, 'Tiene adjuntos no analizados: conservar'
     try:
         date = datetime.fromisoformat(row['date'])

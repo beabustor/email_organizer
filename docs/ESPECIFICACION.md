@@ -4,7 +4,7 @@
 
 Sistema local para estudiar un histórico completo de correo, descubrir temas y entidades, proponer una jerarquía comprensible, demostrar calidad con ejemplos revisados y reutilizar la estructura para organizar correo nuevo. Objetivo adicional: facilitar limpieza de almacenamiento con candidatos explicables dentro de cada grupo, sin borrado automático ni cifras ambientales inventadas.
 
-## Implementado en 0.2
+## Implementado en 0.3
 
 - Importación de originales MIME y texto Gmail/MBOX, parser pasivo y estado de extracción.
 - Gmail en solo lectura para adquisición, sesión de escritura separada, historial incremental y reconciliación al caducar.
@@ -21,7 +21,7 @@ Sistema local para estudiar un histórico completo de correo, descubrir temas y 
 
 - No existe precisión universal garantizada ni evaluación independiente de una cuenta real. Las pruebas funcionales no prueban calidad humana.
 - El modelo de embeddings y la agrupación son candidatos razonables, no «el mejor» sistema demostrado. Falta comparar alternativas sobre ejemplos reales revisados.
-- No se hace OCR ni se extraen PDF/audio/otros adjuntos. Se conserva su original y se protege su limpieza por defecto.
+- Se extrae texto de PDF/DOCX/texto y se hace OCR eng/spa cuando está instalado. No hay comprensión visual de diagramas/fotos, audio ni formatos arbitrarios; no se descifran documentos. Los fallos y límites se dejan para revisión, sin fingir cobertura completa.
 - No hay resolución avanzada de entidades, detección robusta de idioma por mensaje ni clasificador supervisado que aprenda de correcciones.
 - La base no tiene cifrado propio. Se apoya en permisos de archivos/sesión y cifrado del sistema.
 - Las versiones de modelos y planes no deben editarse a mano; no son artefactos firmados contra un atacante con control del PC.

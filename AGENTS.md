@@ -10,5 +10,6 @@
 - Guarda intentos antes del cambio remoto y conserva reversión/idempotencia. No habilites escrituras simultáneas sin diseñar bloqueo y recuperación.
 - Mantén migraciones SQLite compatibles. Artefactos JSON/NumPy sin pickle ejecutable. No rebajes TLS ni aceptes código remoto de modelos.
 - Ejecuta `python -m unittest discover -s tests -v` con el entorno virtual y `python -m pip check`. Pruebas Gmail/API simuladas no acreditan integración real.
+- El texto de adjuntos compatibles se analiza; formatos fallidos/cifrados o sin OCR obligan a revisión. Procesar en worker no es una garantía de aislamiento frente a vulnerabilidades del sistema.
 - Documenta la validación neural real y sus límites; cambios de dependencias o tokenizer requieren probar textos largos y el pipeline real.
 - No atribuyas aval a Stanford ni a otra institución sin evidencia; referencia técnicas y resultados concretos.

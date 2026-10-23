@@ -60,9 +60,10 @@ def report(db, identifier, folder):
         return "'" + value if value.lstrip().startswith(('=', '+', '-', '@')) else value
     with path.open('w', encoding='utf-8-sig', newline='') as stream:
         writer = csv.writer(stream)
-        writer.writerow(['plan', 'source', 'id', 'proposal_hash', 'remitente', 'asunto', 'etiquetas', 'estado', 'similitud_no_probabilidad', 'contenido', 'motivo_limpieza', 'bytes_original', 'aprobar', 'etiquetas_correctas', 'idioma'])
+        writer.writerow(['plan', 'source', 'id', 'proposal_hash', 'remitente', 'asunto', 'etiquetas', 'estado', 'similitud_no_probabilidad', 'contenido', 'motivo_limpieza', 'bytes_original', 'aprobar', 'etiquetas_correctas', 'idioma', 'adjuntos_estado'])
         for row in rows:
-            writer.writerow([identifier, row['source'], row['id'], row['proposal_hash'], safe(row['sender']), safe(row['subject']), safe(' | '.join(json.loads(row['labels']))), row['status'], row['score'], row['content_status'], safe(row['cleanup_reason']), row['size_bytes'], '', '', ''])
+            attachment_state = '; '.join(x['name'] + ': ' + x.get('status', 'unknown') for x in json.loads(row['attachments'] or '[]'))
+            writer.writerow([identifier, row['source'], row['id'], row['proposal_hash'], safe(row['sender']), safe(row['subject']), safe(' | '.join(json.loads(row['labels']))), row['status'], row['score'], row['content_status'], safe(row['cleanup_reason']), row['size_bytes'], '', '', '', safe(attachment_state)])
     counts = {}
     for row in rows:
         for label in json.loads(row['labels']):
@@ -75,7 +76,7 @@ def report(db, identifier, folder):
 <title>Plan de organización</title><style>body{{font:16px system-ui;margin:2rem}}td,th{{padding:.6rem;border:1px solid #ddd;text-align:left}}table{{border-collapse:collapse}}li{{margin:.3rem}}</style>
 <h1>Plan de organización local</h1><p>Plan {identifier}. {len(rows)} mensajes con resultado.
 Previsualización generada antes de aplicar; no es una vista en vivo de Gmail. La similitud no es precisión medida. Revisión necesaria es una clasificación pendiente de decisión humana.
-Los adjuntos se conservan en el original, pero no se han interpretado.</p><ul>{summary}</ul>
+Se analiza el texto de adjuntos compatibles; los fallidos o no compatibles requieren revisión. Consulta adjuntos_estado en el CSV.</p><ul>{summary}</ul>
 <p>Tamaño de originales candidatos: {candidate_bytes / 1024**2:.2f} MiB, sin contar dos veces mensajes multietiqueta. No es ahorro real ni una estimación de CO₂: no se ha borrado nada y hay copia local.</p>
 <p>Abre el CSV del mismo nombre para aprobar filas o aportar etiquetas correctas para evaluación. No publiques estos archivos: contienen datos privados.</p>
 <table><tr><th>Remitente</th><th>Asunto</th><th>Etiquetas propuestas</th><th>Contenido</th><th>Estado</th><th>Similitud</th><th>Limpieza</th><th>Ejemplo</th></tr>{entries}</table></html>'''

@@ -8,7 +8,7 @@ Validación de desarrollo realizada en Linux con Python 3.12, el 23 de octubre d
 python -m unittest discover -s tests -v
 ```
 
-Cubren extracción MIME, HTML pasivo, alternativas con contenido adicional, adjuntos no interpretados, codificaciones, importación idempotente, descarga/historial simulados, fallo sin avanzar cursor, migración de una base anterior, bloqueo local, clasificación del cuerpo, textos largos por tokens, cobertura explícita, caché, planes obsoletos, manipulación de acciones, límites, cuenta incorrecta, protección remota, recuperación tras éxito remoto y fallo local, deshacer, política de automatización y nombres IA inválidos.
+Cubren extracción MIME, HTML pasivo, alternativas con contenido adicional, extracción de adjuntos compatibles, adjuntos desconocidos explícitos, codificaciones, importación idempotente, descarga/historial simulados, fallo sin avanzar cursor, migración de una base anterior, bloqueo local, clasificación del cuerpo, textos largos por tokens, cobertura explícita, caché, planes obsoletos, manipulación de acciones, límites, cuenta incorrecta, protección remota, recuperación tras éxito remoto y fallo local, deshacer, política de automatización y nombres IA inválidos.
 
 Las pruebas de Gmail y de API de nombres usan respuestas simuladas. No prueban OAuth real ni permisos/cuotas de una cuenta.
 
@@ -31,10 +31,12 @@ En la comprobación realizada: 30.000 originales ficticios importados, 30.000 cu
 
 ## Arranque y dependencias
 
+En la versión 0.3 se añadieron pruebas de PDF de texto, DOCX con cuerpo vacío, adjuntos desconocidos, falta de OCR, límites ZIP/macros y reextracción de originales. Se comprobó además OCR real eng/spa de una imagen y un PDF escaneado ficticios con cuerpo vacío: ambos aportaron texto al mensaje. Esto no garantiza transcripción perfecta de documentos reales ni comprensión visual general.
+
 Se ejecutó `run.py`, creó/verificó el entorno y abrió el menú; se salió sin conectar cuentas. `pip check` no detectó dependencias incompatibles. Se verificaron enlaces locales de documentación y XML de los SVG.
 
 Hay CI definida para Windows/macOS/Linux, pero su existencia no implica que sus ejecuciones hayan pasado. Consulta los resultados de Actions de tu commit. No se afirma instalación validada en los tres sistemas desde este entorno Linux.
 
 ## Lo que no está demostrado
 
-Precisión sobre un histórico personal real, calibración de confianza, calidad de todas las categorías, estabilidad ante deriva, independencia estadística de una evaluación, calidad de entidad más allá del dominio, comprensión de adjuntos y ahorro ambiental. Sigue METODO_Y_CALIDAD.md antes de atribuir calidad demostrada o habilitar una política desatendida.
+Precisión sobre un histórico personal real, calibración de confianza, calidad de todas las categorías, estabilidad ante deriva, independencia estadística de una evaluación, calidad de entidad más allá del dominio, comprensión visual general de adjuntos y ahorro ambiental. Sigue METODO_Y_CALIDAD.md antes de atribuir calidad demostrada o habilitar una política desatendida.

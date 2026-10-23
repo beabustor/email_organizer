@@ -9,7 +9,7 @@ from email.parser import BytesParser
 from html.parser import HTMLParser
 from pathlib import Path
 
-PARSER_VERSION = 'mime-1'
+PARSER_VERSION = 'mime-2-attachments'
 
 
 class PlainHTML(HTMLParser):
@@ -43,10 +43,18 @@ def extract(raw):
     msg = BytesParser(policy=policy.default).parsebytes(raw)
     attachments, errors = [], []
 
+    def attached(part):
+        from .attachments import extract_attachment
+        if len(attachments) >= 20:
+            attachments.append({'name': str(part.get_filename() or ''), 'type': part.get_content_type(), 'analyzed': False, 'status': 'limit', 'method': ''})
+            return ''
+        text, info = extract_attachment(part)
+        attachments.append(info)
+        return ('\n[Adjunto: ' + info['name'] + ']\n' + text) if text else ''
+
     def visit(part):
         if part.get_content_disposition() == 'attachment' or part.get_filename():
-            attachments.append({'name': str(part.get_filename() or ''), 'type': part.get_content_type(), 'analyzed': False})
-            return ''
+            return attached(part)
         if part.is_multipart():
             children = list(part.iter_parts())
             # alternative contiene representaciones del mismo contenido, no mensajes distintos.
@@ -67,8 +75,7 @@ def extract(raw):
             return '\n'.join(visit(child) for child in children)
         kind = part.get_content_type()
         if kind not in ('text/plain', 'text/html'):
-            attachments.append({'name': '', 'type': kind, 'analyzed': False})
-            return ''
+            return attached(part)
         payload = part.get_payload(decode=True) or b''
         try:
             text = payload.decode(part.get_content_charset() or 'utf-8', errors='strict')
@@ -82,7 +89,7 @@ def extract(raw):
     # Vista auxiliar; text conserva el cuerpo completo y es lo que analiza el motor.
     main = '\n'.join(line for line in text.splitlines() if not line.lstrip().startswith('>'))
     main = re.split(r'(?m)^-- \s*$|^On .+ wrote:\s*$|^El .+ escribió:\s*$', main)[0].strip()
-    status = 'partial' if errors or msg.defects else 'complete'
+    status = 'partial' if errors or msg.defects or any(not item['analyzed'] for item in attachments) else 'complete'
     if not text:
         status = 'no_text'
     return msg, text, main, attachments, status, '; '.join(errors)
@@ -92,7 +99,9 @@ def save_raw(db, source, identifier, raw, thread_id='', protected=None):
     from .cli import metadata
     from .core import store
     msg, text, main, attachments, status, error = extract(raw)
-    digest = hashlib.sha256(raw).hexdigest()
+    evidence = hashlib.sha256(raw)
+    evidence.update((PARSER_VERSION + text + json.dumps(attachments, sort_keys=True)).encode('utf-8'))
+    digest = evidence.hexdigest()
     with db:
         protected_value = protected if protected is not None else ('F' in str(msg.get('X-Status', '')) or str(msg.get('Importance', '')).lower() == 'high')
         store(db, source, identifier, metadata({k.lower(): str(v) for k, v in msg.items()}, protected_value))
@@ -103,6 +112,25 @@ def save_raw(db, source, identifier, raw, thread_id='', protected=None):
             db.execute('DELETE FROM semantic_results WHERE source=? AND id=?', (source, identifier))
             db.execute('UPDATE operations SET approved=0 WHERE source=? AND id=? AND state=?', (source, identifier, 'pending'))
     return status
+
+
+def reextract(db, source=None, retry=False):
+    where = "c.raw IS NOT NULL AND c.status NOT IN ('deleted','error')"
+    params = []
+    if not retry:
+        where += ' AND c.parser_version!=?'
+        params.append(PARSER_VERSION)
+    if source:
+        where += ' AND c.source=?'
+        params.append(source)
+    identifiers = db.execute(f'SELECT c.source,c.id FROM content c WHERE {where}', params).fetchall()
+    for index, identifier in enumerate(identifiers):
+        row = db.execute('''SELECT c.*,m.protected FROM content c JOIN messages m ON m.source=c.source AND m.id=c.id
+                         WHERE c.source=? AND c.id=?''', (identifier['source'], identifier['id'])).fetchone()
+        save_raw(db, row['source'], row['id'], row['raw'], row['thread_id'], bool(row['protected']))
+        if (index + 1) % 100 == 0:
+            print(f'Contenido reextraído {index+1}/{len(identifiers)}', flush=True)
+    return len(identifiers)
 
 
 def import_mbox(db, filename):
@@ -219,5 +247,5 @@ def sync_full(db, api, include_spam_trash=True):
         with db:
             db.execute('INSERT OR REPLACE INTO sync_state VALUES (?,?)', (source, history_cursor))
     total = db.execute('SELECT count(*) FROM content WHERE source=?', (source,)).fetchone()[0]
-    print(f'Descarga terminada: {total} registros locales; {count} descargados/actualizados. Adjuntos conservados en MIME, no interpretados.', flush=True)
+    print(f'Descarga terminada: {total} registros locales; {count} descargados/actualizados. Revisa la cobertura de adjuntos en el informe.', flush=True)
     return source

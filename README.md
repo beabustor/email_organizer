@@ -38,6 +38,8 @@ Puedes abrir o descargar los archivos [antes.svg](docs/images/gmail-antes.svg) y
 
 El [diseño del motor semántico](docs/MOTOR_SEMANTICO_PROPUESTO.md) describe el siguiente paso: embeddings locales, agrupación del histórico y un clasificador para el correo nuevo. Ese motor aún no está implementado.
 
+Consulta el [procedimiento y protocolo de calidad](docs/METODO_Y_CALIDAD.md): referencias a métodos establecidos, comparación de modelos y evaluación independiente. Todavía no hay una cifra demostrada de precisión sobre correo real; las pruebas funcionales no acreditan calidad semántica.
+
 - Importación local de MBOX (por ejemplo, una exportación de Google Takeout).
 - Conexión opcional a Gmail mediante OAuth de escritorio.
 - Clasificación por lotes reanudable y estimación del tiempo de clasificación local.

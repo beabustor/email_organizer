@@ -1,135 +1,86 @@
-# Organizador local de email
+# Email Organizer: descubrir la organización de tu correo
 
-Base pública para ordenar históricos grandes de Gmail desde tu PC, sin IA de pago ni servidor. Python 3.11 o posterior. Esta versión usa una interfaz de comandos, no dispone de instalador ni interfaz gráfica.
+Proyecto local para estudiar un histórico de unos 30.000 correos, descubrir sus temas y entidades, construir una jerarquía comprensible y utilizarla para organizar el correo nuevo.
 
-## Empieza aquí: copia privada y ejecución paso a paso
+**La estructura debe surgir del contenido del usuario, no de una lista fija de carpetas.** Un mensaje podrá organizarse por temática, entidad y tipo documental. La calidad se medirá con ejemplos revisados y evaluación independiente.
 
-La [guía completa para principiantes](docs/GUIA_PASO_A_PASO.md) explica cómo crear una copia **privada**, descargarla, instalar Python, conectar tu cuenta y comprobar cada resultado.
+## Empieza aquí
 
-1. En GitHub: **+ → Import repository**, introduce la URL de este repositorio y elige **Private**. Un fork público no es la vía para crear una copia privada.
-2. En tu copia: **Code → Download ZIP** y descomprime en tu PC.
-3. Instala Python 3.11 o posterior y abre la terminal en la carpeta del README.
-4. Instala las dependencias y configura tu cliente OAuth de Google siguiendo la guía.
-5. Ejecuta `gmail-sync`: **solo importa cabeceras**.
-6. Ejecuta `classify` y `review`: **solo genera propuestas locales**.
-7. Revisa el CSV, escribe `si` en las filas elegidas y ejecuta `approve`.
-8. Ejecuta `gmail-apply --confirm`: **añade las etiquetas aprobadas**, sin borrar ni archivar.
-9. Abre Gmail y revisa las etiquetas. Tú decides después si eliminas algún correo desde Gmail.
+1. Lee el estado real de esta página.
+2. Sigue [la instalación en Windows, macOS o Linux](docs/INSTALACION_PC.md).
+3. Configura Gmail y, opcionalmente, la API de OpenAI o Anthropic según esa guía.
+4. Para continuar el desarrollo en otra conversación, usa [CONTINUAR_AQUI.md](CONTINUAR_AQUI.md).
 
-**Coste de IA: cero.** Esta versión clasifica con reglas locales. El PC necesita Internet para Google y debe estar encendido mientras se ejecuta cada comando.
+Puedes mantener tu copia de código pública o privada. **Correos, bases, exportaciones, índices y credenciales deben permanecer locales y fuera de Git**, incluso si el repositorio es privado. No necesitas MySQL, Docker ni un servidor web.
 
-## Antes y después: simulación SVG
+Una cuenta de ChatGPT o su contraseña **no sirve como credencial API**. OpenAI necesita una clave API con facturación independiente de ChatGPT. Nunca escribas claves ni contraseñas en el repositorio o en una conversación.
 
-Son ilustraciones con mensajes y cantidades ficticias; no capturas de una cuenta real. Representan el resultado después de revisar y aprobar propuestas. La bandeja mantiene la misma cantidad de mensajes porque el programa no los archiva ni borra.
+## Procedimiento que guía el proyecto
 
-### Antes: histórico mezclado
-
-![Simulación de Gmail antes: newsletters, notificaciones y correos personales mezclados](docs/images/gmail-antes.svg)
-
-### Después: categorías y candidatos visibles
-
-![Simulación de Gmail después: etiquetas de organización y Revisar para borrar, sin eliminar mensajes](docs/images/gmail-despues.svg)
-
-Puedes abrir o descargar los archivos [antes.svg](docs/images/gmail-antes.svg) y [despues.svg](docs/images/gmail-despues.svg). Las etiquetas se crean solo si hay mensajes aprobados que las necesiten. «Conservar» es una decisión local de protección; no se crea una carpeta Gmail con ese nombre.
-
-## Qué funciona
-
-**Nuevo: organización temática y por entidad.** Además de las categorías de limpieza, ahora hay etiquetas anidadas `Organizador/Temas/Tema/Subtema` y `Organizador/Entidades/dominio`. El flujo de [descubrimiento de ontología e IA opcional](docs/ONTOLOGIA_E_IA.md) inventaría el histórico antes de proponer una estructura. Informa de la cobertura real y guarda un borrador revisable. Sigue trabajando solo con cabeceras; no analiza todavía los cuerpos de los mensajes.
-
-El [diseño del motor semántico](docs/MOTOR_SEMANTICO_PROPUESTO.md) describe el siguiente paso: embeddings locales, agrupación del histórico y un clasificador para el correo nuevo. Ese motor aún no está implementado.
-
-Consulta el [procedimiento y protocolo de calidad](docs/METODO_Y_CALIDAD.md): referencias a métodos establecidos, comparación de modelos y evaluación independiente. Todavía no hay una cifra demostrada de precisión sobre correo real; las pruebas funcionales no acreditan calidad semántica.
-
-- Importación local de MBOX (por ejemplo, una exportación de Google Takeout).
-- Conexión opcional a Gmail mediante OAuth de escritorio.
-- Clasificación por lotes reanudable y estimación del tiempo de clasificación local.
-- Propuestas en CSV, aprobación por mensaje y aplicación de etiquetas en Gmail.
-- Etiquetas `Organizador/Newsletters`, `Organizador/Notificaciones`, `Organizador/Correo masivo`, `Organizador/Otros` y `Organizador/Revisar para borrar`.
-- Sin borrado, movimiento a papelera, archivado ni apertura de adjuntos o enlaces.
-
-**«Revisar para borrar» es una etiqueta de candidatos, no una orden de eliminación.** Gmail usa etiquetas, no carpetas tradicionales. Los criterios son orientativos: no existe un criterio universal que garantice que un correo es prescindible.
-
-## Inicio sin conectar ninguna cuenta
-
-Desde la carpeta del repositorio:
-
-```sh
-python -m email_organizer.cli import-mbox /ruta/historico.mbox
-python -m email_organizer.cli classify
-python -m email_organizer.cli review
+```text
+Copiar histórico → extraer contenido y conversaciones → explorar temas y entidades
+    → proponer taxonomía → revisar y versionar → evaluar calidad independiente
+    → clasificar histórico → aplicar etiquetas aprobadas
+    → organizar correo nuevo y aprender de correcciones
 ```
 
-En Windows puede utilizarse `py` en lugar de `python`. Abre `data/review.csv` con una hoja de cálculo. La importación guarda solo cabeceras; no modifica el MBOX. El archivo original puede contener datos privados: guárdalo fuera del repositorio.
+El diseño combina extracción de texto, embeddings locales, descubrimiento de temas, clasificación multietiqueta y aprendizaje activo. SKOS orientará la representación de categorías; no sustituye al modelo que descubre contenido. Organización temática y propuestas de borrado son políticas distintas.
 
-## Conectar Gmail
+Consulta la [especificación](docs/ESPECIFICACION.md), el [motor semántico propuesto](docs/MOTOR_SEMANTICO_PROPUESTO.md) y el [procedimiento de calidad con fuentes](docs/METODO_Y_CALIDAD.md).
 
-1. Crea tu propio proyecto en Google Cloud y habilita Gmail API.
-2. Configura la pantalla de consentimiento OAuth; en modo de pruebas añade tu cuenta como usuario de prueba.
-3. Crea un cliente OAuth de tipo **aplicación de escritorio** y descarga su JSON a `data/credentials.json`. No lo subas a Git.
-4. Instala las dependencias en un entorno virtual:
+## Estado real
 
-```sh
-python -m venv .venv
-# Linux/macOS
-source .venv/bin/activate
-# En Windows PowerShell, en su lugar: .venv\Scripts\Activate.ps1
-python -m pip install -e '.[gmail]'
-python -m email_organizer.cli gmail-sync
-python -m email_organizer.cli classify
-python -m email_organizer.cli review
-```
+| Capacidad | Estado |
+| --- | --- |
+| Importar cabeceras desde Gmail OAuth o MBOX | Implementado |
+| Inventario de todos los mensajes importados | Implementado |
+| Borrador de ontología IA con cabeceras, cobertura y reanudación | Implementado; probado con respuestas simuladas |
+| Reglas temáticas, entidades por dominio, propuestas CSV | Implementado |
+| Etiquetas Gmail anidadas con aprobación explícita | Implementado; sin validación contra una cuenta real aquí |
+| Descargar y analizar cuerpos completos y conversaciones | **Pendiente: siguiente prioridad** |
+| Embeddings locales, índice semántico y agrupación del contenido | Pendiente |
+| Resolver entidades más allá del dominio | Pendiente |
+| Calidad demostrada con correos reales revisados | Pendiente |
+| Historial incremental Gmail y automatización del correo nuevo | Pendiente |
+| Outlook/Hotmail, interfaz gráfica y deshacer automático | Pendiente |
 
-Se abrirá el navegador para autorizar tu cuenta. Los tokens se guardan en el llavero seguro del sistema: Windows Credential Locker, macOS Keychain o Secret Service/KWallet en Linux. Si no hay un llavero compatible, la conexión se detiene; no se guarda el token en texto plano. Esta versión mantiene una sola sesión OAuth por usuario del sistema.
+**No es todavía el organizador semántico completo ni está listo para cambios masivos sin supervisión.** Instalarlo permite preparar conexiones y probar el flujo inicial de cabeceras. No se debe presentar ese flujo como análisis completo del contenido. Los casos ambiguos deberán quedar en revisión.
 
-El permiso `gmail.modify` permite modificar el correo; se solicita para crear y aplicar etiquetas. El código de esta versión solo añade etiquetas. Una aplicación OAuth pública puede requerir verificación de Google. Los tokens de proyectos en modo pruebas pueden caducar y requerir nueva autorización.
+## Qué sucederá al ejecutarlo hoy
 
-## Revisar y aplicar
+- `gmail-sync`: autorización en navegador e importación de cabeceras; sin cambios en Gmail.
+- `inventory`: informe local del histórico importado.
+- `ai-ontology`: borrador basado en dominios y asuntos; requiere consentimiento, clave API y presupuesto. Indica cobertura parcial o completa de cabeceras.
+- `classify`, `ai-classify`, `review`: propuestas locales, sin modificar Gmail.
+- `approve`: registra aprobación local.
+- `gmail-apply --confirm`: añade etiquetas aprobadas; no borra, archiva ni mueve a papelera.
 
-En el CSV escribe `si` en la columna `aprobar` de cada propuesta que quieras aplicar. No cambies `source` ni `id`.
+La instalación no conecta cuentas ni inicia procesos de fondo. Empieza por datos ficticios o una exportación local. Para una cuenta real, prueba unas pocas propuestas antes de considerar un lote mayor. Consulta los [requisitos funcionales y de seguridad pendientes](docs/ESPECIFICACION.md).
 
-```sh
-python -m email_organizer.cli approve data/review.csv
-python -m email_organizer.cli gmail-apply --confirm
-```
+## Simulación visual de la base actual
 
-Solo se aplican propuestas aprobadas de la cuenta conectada. Se vuelven a comprobar mensajes destacados, importantes, enviados, borradores, spam y papelera antes de etiquetar. Puedes quitar manualmente las etiquetas en Gmail; esta versión no incorpora deshacer automático. El registro local `events` guarda las etiquetas añadidas.
+Ejemplos ficticios, **no resultados del motor semántico pendiente**. Se mantienen los mensajes en Recibidos: únicamente se añaden etiquetas.
 
-## Opciones y criterios
+![Antes: Gmail ficticio con mensajes mezclados](docs/images/gmail-antes.svg)
 
-Edita [config/criterios.json](config/criterios.json):
+![Después: etiquetas aprobadas, sin borrar ni archivar](docs/images/gmail-despues.svg)
 
-| Criterio | Valor inicial | Resultado |
-| --- | --- | --- |
-| Cabecera List-Unsubscribe | Cualquier antigüedad | Newsletters |
-| Newsletter antigua | 180 días | También candidata a revisar para borrar |
-| Remitente de notificaciones | 365 días | Candidata a revisar para borrar |
-| Cabecera Precedence bulk/list/junk | 365 días | Candidata a revisar para borrar |
-| Destacado, importante o palabras protegidas | Siempre | Conservar, sin aplicación |
-| Fecha desconocida o correo sin señales suficientes | Siempre | No proponer borrado |
+## Documentación
 
-Las palabras protegidas incluyen facturas, pagos, salud, seguridad y documentos legales. Añade remitentes personales a `protected_senders`; la coincidencia se hace por texto parcial, por lo que una protección amplia puede conservar más mensajes de los necesarios. No se analiza el cuerpo: un documento importante no señalado en el asunto puede pasar inadvertido. Revisa siempre las propuestas.
+- [Instalar y configurar en tu PC](docs/INSTALACION_PC.md).
+- [Guía detallada de Gmail y revisión por CSV](docs/GUIA_PASO_A_PASO.md).
+- [Descubrimiento de ontología e IA actual](docs/ONTOLOGIA_E_IA.md).
+- [Método y evaluación de calidad](docs/METODO_Y_CALIDAD.md).
+- [Especificación y prioridades](docs/ESPECIFICACION.md).
+- [Referencia de los comandos y reglas actuales](docs/REFERENCIA_CLI.md).
 
-Tras cambiar criterios:
+## Desarrollo y validación
 
-```sh
-python -m email_organizer.cli classify --recalculate --batch-size 200
-python -m email_organizer.cli review
-```
-
-Recalcular elimina aprobaciones de propuestas aún no aplicadas. No retira etiquetas ya aplicadas. Puedes detener con Ctrl+C y repetir: los lotes confirmados y mensajes importados se conservan. Gmail vuelve a enumerar el buzón y omite IDs conocidos; todavía no usa `historyId` ni refleja cambios o eliminaciones de mensajes ya importados. Para una revisión nueva del estado completo, utiliza otra base con `--db data/otra.sqlite` antes del subcomando.
-
-## Privacidad y costes
-
-Por defecto no se envía nada a proveedores de IA. Los comandos opcionales `ai-ontology` y `ai-classify` requieren consentimiento explícito y pueden generar costes API. Consulta qué datos envía cada uno en la [guía de IA](docs/ONTOLOGIA_E_IA.md). No necesitas cuenta de GitHub para ejecutarlo ni copiar el repositorio a privado. `data/`, MBOX, tokens y credenciales están excluidos de Git. La base contiene remitentes y asuntos sin cifrar: protege tu sesión, usa cifrado de disco y no compartas CSV o copias de seguridad. No ejecutes el programa en un equipo compartido sin protección.
-
-El PC debe permanecer encendido. No hay un servicio programado de fondo todavía: cada comando termina al completar su trabajo. El tiempo estimado corresponde solo a clasificación local; no incluye OAuth, descarga ni aplicación de etiquetas.
-
-## Validación y próximos pasos
+Desde la raíz, usando el Python del entorno virtual:
 
 ```sh
 python -m unittest discover -s tests -v
+python -m pip check
 ```
 
-Pendientes: conexión Hotmail/Outlook mediante Microsoft Graph, interfaz gráfica, programador de ciclos, sincronización Gmail por historyId, deshacer automático y análisis semántico de cuerpos. El importador MBOX puede utilizarse con exportaciones compatibles, pero no equivale a una conexión Outlook.
-
-Nunca incluyas datos reales en incidencias, pruebas o contribuciones.
+Las pruebas actuales verifican reglas, persistencia, caché, cobertura, límites y operaciones simuladas. **No acreditan precisión semántica sobre tu correo.** La comprobación sintética de 30.000 mensajes tampoco es un benchmark sobre cuerpos reales. No se han validado instalaciones Windows/macOS desde este entorno Linux.

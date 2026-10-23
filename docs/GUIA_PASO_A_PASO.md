@@ -1,5 +1,7 @@
 # Guía: de tu copia privada a Gmail organizado
 
+Para empezar desde cero, usa primero [INSTALACION_PC.md](INSTALACION_PC.md): incluye Windows, macOS, Linux y la diferencia entre ChatGPT y la API. El código puede ser público o privado; los datos y secretos son siempre locales. Esta página describe el flujo actual de cabeceras, no el motor semántico completo pendiente.
+
 Para históricos grandes, antes de decidir carpetas consulta la [guía de ontología e IA](ONTOLOGIA_E_IA.md). Explica cómo inventariar todos los mensajes importados, proponer una estructura personalizada y distinguir análisis parcial de cobertura completa de cabeceras. Los pasos de esta página siguen siendo el recorrido básico sin IA; el catálogo de ejemplo no sustituye al descubrimiento de tu estructura personal.
 
 ## 1. Crea una copia privada en GitHub

@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "email-organizer-local"
 version = "0.1.0"
-description = "Organizador local de correo con propuestas revisables"
+description = "Base local para descubrir y validar una taxonomía personal del histórico de correo"
 requires-python = ">=3.11"
 dependencies = []
 

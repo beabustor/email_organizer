@@ -5,6 +5,11 @@ __pycache__/
 data/
 credentials*.json
 token*.json
+client_secret*.json
+*.eml
+*.pst
+models/
+indexes/
 *.mbox
 *.sqlite*
 dist/

@@ -28,7 +28,9 @@ def register(sub):
     p.add_argument('file')
     p = sub.add_parser('gmail-download', help='Descarga Gmail completo y reanuda con historial incremental')
     p.add_argument('--credentials', default='data/credentials.json')
-    p.add_argument('--exclude-spam-trash', action='store_true')
+    group = p.add_mutually_exclusive_group()
+    group.add_argument('--exclude-spam-trash', action='store_true', help='Compatibilidad: ya es el comportamiento predeterminado')
+    group.add_argument('--include-spam-trash', action='store_true', help='Opt-in de riesgo: descarga también spam y papelera, incluidos adjuntos')
     for name in ('analyze', 'predict'):
         p = sub.add_parser(name, help='Descubre estructura con cuerpos completos' if name == 'analyze' else 'Clasifica con la estructura ya guardada')
         p.add_argument('--model-dir', default='data/semantic')
@@ -83,7 +85,7 @@ def execute(args, db):
     elif args.command == 'gmail-download':
         from .gmail import service
         from .content import sync_full
-        sync_full(db, service(args.credentials, writable=False), include_spam_trash=not args.exclude_spam_trash)
+        sync_full(db, service(args.credentials, writable=False), include_spam_trash=args.include_spam_trash)
     elif args.command == 'analyze':
         from .semantic import fit
         fit(db, args.model_dir, args.source, args.backend, args.neural_model, args.max_topics, args.threshold)

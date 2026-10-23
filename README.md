@@ -29,7 +29,7 @@ En Windows también puedes abrir `Iniciar-Windows.bat`. El asistente crea `.venv
 
 ## Qué sucede
 
-1. **Descarga completa:** Gmail en modo de solo lectura, originales MIME y texto; o importación de MBOX. Guarda progreso en SQLite. Incluye spam/papelera salvo exclusión explícita.
+1. **Descarga completa:** Gmail en modo de solo lectura, originales MIME y texto; o importación de MBOX. Guarda progreso en SQLite. Excluye spam y papelera por defecto y consulta etiquetas antes de descargar cada original con sus adjuntos.
 2. **Análisis local:** procesa todo el texto extraído. El motor neural divide textos largos por tokens y combina todos sus fragmentos; no mira solo el principio.
 3. **Descubrimiento:** agrupa documentos y propone dos niveles temáticos. Los nombres iniciales son términos representativos. OpenAI/Claude pueden proponer nombres más humanos si autorizas enviar ejemplos.
 4. **Cobertura:** todo mensaje importado recibe propuesta o `Organizador/Revision necesaria`. Esto no equivale a acertar todos: imágenes, cifrado, texto incompleto o señales insuficientes requieren revisión.
@@ -80,10 +80,12 @@ Los nombres y grupos se descubren en tu histórico. La subcarpeta de candidatos 
 
 ## Seguridad y límites actuales
 
+Consulta [la política de descarga segura y sus límites](docs/SEGURIDAD_DESCARGA.md). Excluir spam reduce exposición; no convierte el resto del correo en seguro.
+
 - Tokens en el llavero del sistema, adquisición con `gmail.readonly`, escritura separada. Nunca contraseñas de Gmail.
 - Planes con hash de contenido y versión; rechaza aprobaciones obsoletas y cuentas distintas.
 - Aplicación reanudable y reversión de etiquetas añadidas por el plan. No borra ni archiva. No elimina las carpetas vacías al deshacer.
-- Destacados, importantes, enviados, borradores, spam y papelera se analizan localmente pero se omiten al aplicar etiquetas.
+- Destacados, importantes, enviados y borradores se omiten al aplicar etiquetas. Spam y papelera no se descargan por defecto.
 - No abre enlaces remotos ni ejecuta macros o aplicaciones asociadas. **Extrae texto de PDF, DOCX, TXT, CSV y HTML adjuntos; imágenes y PDF escaneados usan OCR local con Tesseract eng/spa.** Si falta OCR, el formato no se soporta o hay un error/límite, pasa a revisión. OCR no equivale a comprender fotografías, diagramas o gráficos; audio, archivos cifrados y otros formatos siguen requiriendo revisión.
 - La base local y los vectores no tienen cifrado propio: usa sesión privada, cifrado de disco y una política de copias. No ejecutes aplicación y modificaciones manuales de las mismas etiquetas simultáneamente.
 - La similitud no es una probabilidad de acierto. La calidad sobre tu cuenta debe medirse. No hay garantía de 100% de acierto.

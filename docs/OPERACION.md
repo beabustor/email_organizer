@@ -101,3 +101,8 @@ Los cambios de evidencia invalidan planes anteriores. `adjuntos_estado` en el CS
 ## Datos y privacidad
 
 Nunca subas `data`, CSV/HTML, originales, vectores, claves o tokens. El JSON-LD SKOS no contiene cuerpos, pero sus nombres temáticos pueden revelar información personal. No lo publiques automáticamente. Para llevar mejoras al público consulta [PUBLICAR_MEJORAS.md](PUBLICAR_MEJORAS.md).
+
+
+## Exclusión de spam y papelera
+
+`gmail-download`, el asistente y `refresh` los excluyen por defecto. Antes de adquirir un original nuevo se consulta `format=minimal`, sin cuerpo ni adjuntos. `--exclude-spam-trash` se conserva por compatibilidad. Solo el comando avanzado `gmail-download --include-spam-trash` permite incluirlos explícitamente, con el riesgo de procesar sus adjuntos. Véanse los límites en [SEGURIDAD_DESCARGA.md](SEGURIDAD_DESCARGA.md).

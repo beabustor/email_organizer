@@ -115,7 +115,7 @@ def save_raw(db, source, identifier, raw, thread_id='', protected=None):
 
 
 def reextract(db, source=None, retry=False):
-    where = "c.raw IS NOT NULL AND c.status NOT IN ('deleted','error')"
+    where = "c.raw IS NOT NULL AND c.status NOT IN ('deleted','error','excluded')"
     params = []
     if not retry:
         where += ' AND c.parser_version!=?'
@@ -153,7 +153,7 @@ def import_mbox(db, filename):
     return source
 
 
-def sync_full(db, api, include_spam_trash=True):
+def sync_full(db, api, include_spam_trash=False):
     """Primera enumeración completa; después history.list y reconciliación si caduca."""
     from .gmail import execute
     users = api.users()
@@ -169,6 +169,16 @@ def sync_full(db, api, include_spam_trash=True):
         if identifier in handled or (identifier in known and not force):
             return
         try:
+            if not include_spam_trash:
+                # Comprobar etiquetas antes de solicitar MIME (incluye adjuntos).
+                current = execute(users.messages().get(userId='me', id=identifier, format='minimal'))
+                if set(current.get('labelIds', [])) & {'SPAM', 'TRASH'}:
+                    with db:
+                        db.execute("UPDATE content SET status='excluded' WHERE source=? AND id=?", (source, identifier))
+                        db.execute('DELETE FROM semantic_results WHERE source=? AND id=?', (source, identifier))
+                        db.execute("UPDATE operations SET approved=0 WHERE source=? AND id=? AND state='pending'", (source, identifier))
+                    handled.add(identifier)
+                    return
             item = execute(users.messages().get(userId='me', id=identifier, format='raw'))
             raw = base64.urlsafe_b64decode(item['raw'] + '=' * (-len(item['raw']) % 4))
             labels = item.get('labelIds', [])

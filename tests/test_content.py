@@ -85,11 +85,11 @@ class ContentTests(unittest.TestCase):
         users.getProfile.return_value.execute.return_value = {'emailAddress': 'me@example.org', 'historyId': '10'}
         users.messages.return_value.list.return_value.execute.return_value = {'messages': [{'id': 'one'}]}
         users.messages.return_value.get.return_value.execute.return_value = {'raw': base64.urlsafe_b64encode(message().as_bytes()).decode(), 'threadId': 'thread', 'labelIds': ['STARRED']}
-        sync_full(self.db, api)
+        sync_full(self.db, api, include_spam_trash=True)
         self.assertEqual(self.db.execute('SELECT protected FROM messages').fetchone()[0], 1)
         users.history.return_value.list.return_value.execute.return_value = {'historyId': '11'}
         users.messages.return_value.get.reset_mock()
-        sync_full(self.db, api)
+        sync_full(self.db, api, include_spam_trash=True)
         users.messages.return_value.get.assert_not_called()
         self.assertEqual(self.db.execute('SELECT history_id FROM sync_state').fetchone()[0], '11')
 
@@ -100,7 +100,7 @@ class ContentTests(unittest.TestCase):
         users.messages.return_value.list.return_value.execute.return_value = {'messages': [{'id': 'failed'}]}
         users.messages.return_value.get.return_value.execute.side_effect = OSError('no network')
         with self.assertRaises(RuntimeError):
-            sync_full(self.db, api)
+            sync_full(self.db, api, include_spam_trash=True)
         self.assertEqual(self.db.execute('SELECT count(*) FROM sync_state').fetchone()[0], 0)
         self.assertEqual(self.db.execute('SELECT status FROM content').fetchone()[0], 'error')
 
@@ -113,6 +113,36 @@ class ContentTests(unittest.TestCase):
         users.getProfile.return_value.execute.return_value = {'emailAddress': 'me@example.org', 'historyId': '11'}
         users.history.return_value.list.return_value.execute.return_value = {'historyId': '11', 'history': [{'labelsAdded': [{'message': {'id': 'one'}}]}]}
         users.messages.return_value.get.return_value.execute.return_value = {'labelIds': ['IMPORTANT']}
-        sync_full(self.db, api)
+        sync_full(self.db, api, include_spam_trash=True)
         users.messages.return_value.get.assert_called_once_with(userId='me', id='one', format='minimal')
         self.assertEqual(self.db.execute('SELECT protected FROM messages').fetchone()[0], 1)
+
+
+    def test_default_excludes_spam_and_trash_before_raw_or_extraction(self):
+        from unittest.mock import patch
+        for label in ('SPAM', 'TRASH'):
+            with self.subTest(label=label):
+                api = MagicMock()
+                users = api.users.return_value
+                users.getProfile.return_value.execute.return_value = {'emailAddress': 'me@example.org', 'historyId': '10'}
+                # Simula mensaje que entra en spam después de enumerarlo.
+                users.messages.return_value.list.return_value.execute.return_value = {'messages': [{'id': 'unsafe'}]}
+                users.messages.return_value.get.return_value.execute.return_value = {'labelIds': [label]}
+                with patch('email_organizer.content.extract') as extraction:
+                    sync_full(self.db, api)
+                    extraction.assert_not_called()
+                users.messages.return_value.list.assert_called_once_with(userId='me', maxResults=500, pageToken=None, includeSpamTrash=False)
+                users.messages.return_value.get.assert_called_once_with(userId='me', id='unsafe', format='minimal')
+                self.assertEqual(self.db.execute('SELECT count(*) FROM content').fetchone()[0], 0)
+
+    def test_default_downloads_allowed_mail_after_preflight(self):
+        api = MagicMock()
+        users = api.users.return_value
+        users.getProfile.return_value.execute.return_value = {'emailAddress': 'me@example.org'}
+        users.messages.return_value.list.return_value.execute.return_value = {'messages': [{'id': 'ok'}]}
+        users.messages.return_value.get.return_value.execute.side_effect = [
+            {'labelIds': ['INBOX']},
+            {'raw': base64.urlsafe_b64encode(message().as_bytes()).decode(), 'labelIds': ['INBOX']}]
+        sync_full(self.db, api)
+        self.assertEqual([c.kwargs['format'] for c in users.messages.return_value.get.call_args_list], ['minimal', 'raw'])
+        self.assertEqual(self.db.execute('SELECT count(*) FROM content').fetchone()[0], 1)

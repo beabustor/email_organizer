@@ -67,7 +67,7 @@ La versión debe ser 3.11 o posterior. En otras distribuciones usa sus paquetes 
 6. Descarga el JSON como `data/credentials.json`. Crea `data` si hace falta. No lo publiques ni lo pegues en un chat.
 7. En el asistente elige **Descargar Gmail y analizar todo**. Se abre el navegador para elegir cuenta y autorizar lectura.
 
-Se descarga todo lo accesible por Gmail, incluidos spam/papelera. Para excluirlos utiliza el comando avanzado de la guía de operación. La descarga inicial puede tardar bastante: guarda cada mensaje y se puede reanudar. Después utiliza el historial de Gmail; si caduca, vuelve a enumerar y reconcilia.
+Se descarga el correo excluyendo spam y papelera por defecto, también en el asistente y al actualizar. Antes de descargar cada original nuevo se consultan sus etiquetas sin cuerpo ni adjuntos. La descarga inicial puede tardar bastante: guarda cada mensaje y se puede reanudar. En este modo se vuelve a enumerar el correo al actualizar y no se descargan otra vez los originales ya guardados. Consulta [seguridad de descarga](SEGURIDAD_DESCARGA.md).
 
 **La descarga no modifica Gmail.** El token de lectura se guarda en el llavero bajo `email-organizer`, cuenta `readonly`. La escritura se solicita por separado cuando decidas aplicar un plan y usa la cuenta `default` del mismo servicio. Si no hay llavero compatible, se detiene. La aplicación mantiene una sesión por modalidad; no es un gestor OAuth multicuenta simultáneo.
 
